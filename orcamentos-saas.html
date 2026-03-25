@@ -1,0 +1,2667 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MTPRO — Sistema de Orçamentos</title>
+
+<!-- PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MTPRO">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a2332">
+<meta name="description" content="MTPRO — Sistema de Orçamentos">
+
+<!-- Ícone para iPhone (tela inicial) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMWEyMzMyIi8+PHRleHQgeD0iNTAlIiB5PSI1MyUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSI3MiIgZmlsbD0iI2U4NTIwYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+Q01UPC90ZXh0Pjwvc3ZnPg==">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a2332'/><text y='68' x='50' font-size='52' font-weight='900' font-family='Arial' fill='%23e8520a' text-anchor='middle'>C</text></svg>">
+
+<!-- Manifest inline via JS -->
+<script>
+const manifest = {
+  name: "MTPRO — Sistema de Orçamentos",
+  short_name: "MTPRO",
+  description: "MTPRO — Sistema de Orçamentos",
+  start_url: "./cmt-orcamentos.html",
+  display: "standalone",
+  orientation: "any",
+  background_color: "#1a2332",
+  theme_color: "#1a2332",
+  icons: [
+    {
+      src: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyCiBoZWlnaHQ9IjE5MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjQwIiBmaWxsPSIjMWEyMzMyIi8+PHRleHQgeD0iNTAlIiB5PSI1MyUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSI3OCIgZmlsbD0iI2U4NTIwYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+Q01UPC90ZXh0Pjwvc3ZnPg==",
+      sizes: "192x192", type: "image/svg+xml", purpose: "any maskable"
+    },
+    {
+      src: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjkwIiBmaWxsPSIjMWEyMzMyIi8+PHRleHQgeD0iNTAlIiB5PSI1MyUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSIyMDAiIGZpbGw9IiNlODUyMGEiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPkNNVDwvdGV4dD48L3N2Zz4=",
+      sizes: "512x512", type: "image/svg+xml", purpose: "any maskable"
+    }
+  ]
+};
+const blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+const url = URL.createObjectURL(blob);
+const link = document.createElement('link');
+link.rel = 'manifest'; link.href = url;
+document.currentScript.after(link);
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#e8e5de;
+  --bg2:#ffffff;
+  --bg3:#f2f0ea;
+  --bg4:#e0ddd6;
+  --border:rgba(0,0,0,0.08);
+  --border2:rgba(0,0,0,0.14);
+  --text:#1a1a1a;
+  --muted:#6b6860;
+  --muted2:#9a9690;
+  --accent:#e8520a;
+  --accent2:#c94208;
+  --green:#0a8a4a;
+  --red:#cc2222;
+  --blue:#1a5fa8;
+  --purple:#6b46c1;
+  --header:#1a2332;
+  --r:10px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* HEADER */
+.header{
+  display:flex;align-items:center;gap:16px;
+  padding:0 28px;
+  background:var(--header);
+  position:sticky;top:0;z-index:100;
+  min-height:52px;
+}
+.logo{font-family:'Inter',sans-serif;font-size:15px;font-weight:700;color:#ffffff;letter-spacing:0.01em}
+.logo span{color:rgba(255,255,255,0.5);font-weight:400;font-size:13px;margin-left:8px}
+.nav{display:flex;gap:0;margin-left:auto;height:52px}
+.nav-btn{
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
+  color:rgba(255,255,255,0.65);padding:0 18px;height:100%;
+  border:none;border-bottom:3px solid transparent;background:none;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;
+}
+.nav-btn:hover{color:#fff;background:rgba(255,255,255,0.06)}
+.nav-btn.active{color:#fff;border-bottom-color:var(--accent)}
+
+/* MAIN */
+.main{padding:28px;max-width:1400px;margin:0 auto}
+
+/* SCREEN */
+.screen{display:none;animation:fadeIn .3s ease}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* GRID ORCAMENTO */
+.orc-grid{display:grid;grid-template-columns:1fr 400px;gap:20px;align-items:start}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:22px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.card+.card{margin-top:16px}
+.card-title{
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);
+  margin-bottom:18px;display:flex;align-items:center;gap:8px;
+}
+.card-title .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+/* FIELDS */
+.field-group{margin-bottom:14px}
+.field-label{font-size:12px;color:var(--muted);margin-bottom:5px;display:block;font-weight:500}
+.field{
+  background:#fff;border:1px solid var(--border2);
+  border-radius:8px;padding:10px 14px;
+  color:var(--text);font-family:'Inter',sans-serif;font-size:14px;
+  width:100%;outline:none;transition:border .2s;
+}
+.field:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,82,10,0.1)}
+select.field{cursor:pointer;background:#fff}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* MARGEM SLIDER */
+.margem-block{
+  background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:16px;margin-bottom:14px;
+}
+.margem-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.margem-label{font-size:13px;color:var(--muted);font-weight:500}
+.margem-val{font-family:'Inter',sans-serif;font-size:22px;font-weight:700;color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent);cursor:pointer}
+.margem-bars{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.mbar{background:var(--bg4);border-radius:6px;padding:10px 12px;border:1px solid var(--border)}
+.mbar-label{font-size:11px;color:var(--muted);margin-bottom:4px;font-weight:500}
+.mbar-val{font-family:'Inter',sans-serif;font-size:15px;font-weight:700}
+.mbar-val.green{color:var(--green)}
+.mbar-val.amber{color:var(--accent)}
+
+/* MATERIAIS LISTA */
+.mat-section{margin-bottom:8px}
+.mat-category{
+  font-family:'Inter',sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:0.1em;text-transform:uppercase;color:var(--muted2);
+  padding:10px 0 6px;border-bottom:1px solid var(--border);margin-bottom:6px;
+}
+.mat-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;border-radius:8px;cursor:pointer;
+  transition:background .15s;border:1px solid transparent;
+  margin-bottom:4px;
+}
+.mat-item:hover{background:var(--bg3);border-color:var(--border2)}
+.mat-item.added{background:rgba(232,82,10,0.06);border-color:rgba(232,82,10,0.3)}
+.mat-check{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border2);background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;transition:all .15s}
+.mat-item.added .mat-check{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.mat-info{flex:1;min-width:0}
+.mat-nome{font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.mat-unit{font-size:11px;color:var(--muted);margin-top:1px}
+.mat-custo{font-family:'Inter',sans-serif;font-size:12px;color:var(--accent);font-weight:700;white-space:nowrap}
+
+/* ITENS DO ORÇAMENTO */
+.item-linha{
+  display:flex;align-items:center;gap:8px;
+  padding:10px;border-radius:8px;
+  background:var(--bg3);border:1px solid var(--border);
+  margin-bottom:8px;
+}
+.item-nome{flex:1;font-size:13px;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.item-unit{font-size:11px;color:var(--muted);width:32px;text-align:center}
+.item-qty{
+  background:#fff;border:1px solid var(--border2);border-radius:6px;
+  padding:5px 8px;width:64px;color:var(--text);
+  font-family:'Inter',sans-serif;font-size:13px;text-align:center;outline:none;
+}
+.item-qty:focus{border-color:var(--accent)}
+.item-custo-unit{font-size:11px;color:var(--muted);width:56px;text-align:right}
+.item-total{font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:var(--text);width:72px;text-align:right}
+.item-del{color:var(--muted2);font-size:18px;cursor:pointer;padding:0 4px;transition:color .15s;line-height:1}
+.item-del:hover{color:var(--red)}
+
+/* TOTAL BLOCK */
+.total-block{
+  background:linear-gradient(135deg,rgba(232,82,10,0.07),rgba(232,82,10,0.03));
+  border:1px solid rgba(232,82,10,0.2);border-radius:10px;padding:18px;margin-top:16px;
+}
+.total-row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:8px}
+.total-row.highlight{color:var(--text);font-weight:500}
+.total-divider{border:none;border-top:1px solid var(--border);margin:10px 0}
+.total-final{display:flex;justify-content:space-between;align-items:center}
+.total-final .label{font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em}
+.total-final .val{font-family:'Inter',sans-serif;font-size:28px;font-weight:800;color:var(--accent)}
+.lucro-bar{margin-top:12px}
+.lucro-bar-track{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-top:6px}
+.lucro-bar-fill{height:100%;border-radius:2px;background:var(--green);transition:width .5s ease}
+.lucro-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-weight:500}
+
+/* BTNS */
+.btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
+  letter-spacing:0.02em;
+  border:none;border-radius:8px;padding:12px 20px;cursor:pointer;
+  width:100%;transition:all .2s;margin-top:10px;
+}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(232,82,10,0.3)}
+.btn-secondary{background:transparent;color:var(--text);border:1.5px solid var(--border2)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-ghost{background:#fff;color:var(--muted);border:1px solid var(--border2);padding:8px 14px;font-size:12px;border-radius:7px;font-family:'Inter',sans-serif;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-ghost:hover{color:var(--accent);border-color:var(--accent)}
+
+/* NOVO MATERIAL FORM */
+.novo-mat-form{
+  background:rgba(232,82,10,0.04);border:1px dashed rgba(232,82,10,0.3);
+  border-radius:10px;padding:16px;margin-top:12px;display:none;
+}
+.novo-mat-form.open{display:block}
+.novo-mat-grid{display:grid;grid-template-columns:1fr 1fr 1fr 80px;gap:8px;align-items:end}
+
+/* LISTA ORCAMENTOS */
+.orc-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.orc-header h2{font-family:'Inter',sans-serif;font-size:20px;font-weight:700;color:var(--text)}
+.search-field{
+  background:#fff;border:1px solid var(--border2);border-radius:8px;
+  padding:9px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;
+  outline:none;width:220px;margin-left:auto;
+}
+.search-field:focus{border-color:var(--accent)}
+
+.orc-table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{
+  text-align:left;font-size:11px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.08em;
+  padding:10px 14px;border-bottom:2px solid var(--border);
+  font-family:'Inter',sans-serif;font-weight:700;white-space:nowrap;
+}
+td{padding:13px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(232,82,10,0.03);cursor:pointer}
+.td-num{font-family:'Inter',sans-serif;font-size:12px;color:var(--muted);font-weight:600}
+.td-val{font-family:'Inter',sans-serif;font-weight:700}
+.td-green{color:var(--green)}
+.td-amber{color:var(--accent)}
+.td-red{color:var(--red)}
+
+/* BADGES */
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.badge-green{background:rgba(10,138,74,0.12);color:var(--green)}
+.badge-amber{background:rgba(232,82,10,0.12);color:var(--accent)}
+.badge-red{background:rgba(204,34,34,0.12);color:var(--red)}
+.badge-blue{background:rgba(26,95,168,0.12);color:var(--blue)}
+
+/* RELATÓRIO */
+.rel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;font-weight:600}
+.kpi-val{font-family:'Inter',sans-serif;font-size:26px;font-weight:800;color:var(--text)}
+.kpi-sub{font-size:12px;margin-top:5px;color:var(--muted)}
+.rel-bottom{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* CLIENTE RANKING */
+.cliente-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;border-bottom:1px solid var(--border);
+}
+.cliente-row:last-child{border-bottom:none}
+.cliente-rank{font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:var(--muted2);width:20px;text-align:center}
+.cliente-info{flex:1}
+.cliente-nome{font-size:13px;font-weight:600;color:var(--text)}
+.cliente-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.cliente-lucro{font-family:'Inter',sans-serif;font-size:14px;font-weight:700}
+.progress-mini{height:3px;background:var(--bg4);border-radius:2px;margin-top:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:2px;transition:width .6s ease}
+
+/* MO BLOCK */
+.mo-block{
+  background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+  padding:12px;margin-bottom:8px;
+}
+.mo-row{display:flex;align-items:center;gap:8px}
+.mo-label{font-size:13px;flex:1;font-weight:500}
+.mo-pct{font-size:12px;color:var(--muted)}
+.mo-val{font-family:'Inter',sans-serif;font-size:14px;font-weight:700;color:var(--accent);min-width:80px;text-align:right}
+
+/* TOAST */
+#toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);
+  background:var(--header);border:none;
+  color:#fff;padding:11px 24px;border-radius:10px;
+  font-size:13px;font-family:'Inter',sans-serif;font-weight:600;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:999;pointer-events:none;
+  white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.2);
+}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* MODAL */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:#fff;border:1px solid var(--border);border-radius:14px;
+  padding:28px;width:90%;max-width:560px;max-height:90vh;overflow-y:auto;
+  box-shadow:0 8px 32px rgba(0,0,0,0.15);
+}
+.modal h3{font-family:'Inter',sans-serif;font-size:18px;font-weight:700;margin-bottom:20px;color:var(--text)}
+.modal-footer{display:flex;gap:10px;margin-top:20px}
+.modal-footer .btn{margin-top:0}
+
+/* MOBILE / PWA */
+@media (max-width: 768px) {
+  .header { padding: 0 16px; }
+  .logo span { display: none; }
+  .nav-btn { padding: 0 11px; font-size: 11px; }
+  .main { padding: 16px; }
+  .orc-grid { grid-template-columns: 1fr; }
+  .rel-grid { grid-template-columns: 1fr 1fr; }
+  .rel-bottom { grid-template-columns: 1fr; }
+  .fin-grid { grid-template-columns: 1fr 1fr; }
+  .novo-mat-grid { grid-template-columns: 1fr 1fr; }
+  .novo-mat-grid > div:last-child { grid-column: span 2; }
+  table { font-size: 12px; }
+  th, td { padding: 10px 8px; }
+  .kpi-val { font-size: 20px; }
+  .orc-header { flex-wrap: wrap; gap: 8px; }
+  .search-field { width: 100%; margin-left: 0; }
+}
+@media (max-width: 480px) {
+  .nav { gap: 0; overflow-x: auto; }
+  .nav-btn { padding: 0 10px; font-size: 10px; white-space: nowrap; }
+  .rel-grid { grid-template-columns: 1fr; }
+  .margem-bars { grid-template-columns: 1fr 1fr; }
+  .modal { padding: 20px 16px; }
+  .modal-footer { flex-direction: column; }
+}
+/* iPhone notch / safe areas */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+.header {
+  padding-top: max(0px, env(safe-area-inset-top));
+}
+/* Standalone PWA — esconde barra de status */
+@media all and (display-mode: standalone) {
+  .header { padding-top: max(12px, env(safe-area-inset-top)); }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">MT<span style="color:var(--accent)">PRO</span></div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showScreen('orcamento',this)">Novo orçamento</button>
+    <button class="nav-btn" onclick="showScreen('lista',this)">Orçamentos</button>
+    <button class="nav-btn" onclick="showScreen('relatorio',this)">Relatório</button>
+    <button class="nav-btn" onclick="showScreen('materiais',this)">Materiais</button>
+    <button class="nav-btn" id="nav-usuarios" onclick="showScreen('usuarios',this)">Usuários</button>
+  </nav>
+</div>
+
+<div class="main">
+
+<!-- ===== NOVO ORÇAMENTO ===== -->
+<div class="screen active" id="screen-orcamento">
+  <div class="orc-grid">
+
+    <!-- COLUNA ESQUERDA -->
+    <div>
+      <!-- Cliente -->
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>Dados do pedido</div>
+        <div class="field-row">
+          <div class="field-group">
+            <label class="field-label">Cliente</label>
+            <select class="field" id="sel-cliente">
+              <option value="">Selecione o cliente...</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Número do orçamento</label>
+            <input class="field" id="orc-num" value="#001" readonly style="opacity:.5">
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Descrição do serviço</label>
+          <input class="field" id="orc-desc" placeholder="Ex: Fachada ACM — loja unidade centro...">
+        </div>
+        <div class="field-row">
+          <div class="field-group" style="margin:0">
+            <label class="field-label">Forma de pagamento</label>
+            <select class="field" id="orc-pagamento" onchange="toggleCartaoTaxaNovo()">
+              <option value="dinheiro">Dinheiro / PIX</option>
+              <option value="boleto">Boleto</option>
+              <option value="cartao_debito">Cartão débito</option>
+              <option value="cartao_credito">Cartão crédito</option>
+              <option value="cheque">Cheque</option>
+              <option value="transferencia">Transferência</option>
+            </select>
+          </div>
+          <div class="field-group" id="taxa-novo-wrap" style="margin:0;display:none">
+            <label class="field-label">Taxa do cartão (%)</label>
+            <input class="field" id="orc-taxa-cartao" type="number" min="0" max="10" step="0.1" value="2.5" oninput="recalcular()" placeholder="Ex: 2.5">
+          </div>
+        </div>
+      </div>
+
+      <!-- Materiais -->
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>Catálogo de materiais</div>
+        <div id="catalogo-lista"></div>
+        <button class="btn-ghost" style="margin-top:10px" onclick="toggleNovoMat()">+ Novo material</button>
+        <div class="novo-mat-form" id="novo-mat-form">
+          <div class="novo-mat-grid">
+            <div class="field-group" style="margin:0">
+              <label class="field-label">Nome</label>
+              <input class="field" id="nm-nome" placeholder="Ex: Lona banner">
+            </div>
+            <div class="field-group" style="margin:0">
+              <label class="field-label">Unidade</label>
+              <select class="field" id="nm-unit">
+                <option value="m²">m²</option>
+                <option value="ml">ml</option>
+                <option value="un">un</option>
+                <option value="pct">pct</option>
+                <option value="hr">hr</option>
+                <option value="dia">dia</option>
+                <option value="uso">uso</option>
+                <option value="m">m</option>
+              </select>
+            </div>
+            <div class="field-group" style="margin:0">
+              <label class="field-label">Custo (R$)</label>
+              <input class="field" id="nm-custo" type="number" placeholder="0,00">
+            </div>
+            <div class="field-group" style="margin:0">
+              <label class="field-label" style="visibility:hidden">.</label>
+              <button class="btn btn-primary" style="margin:0;padding:10px 0;font-size:11px" onclick="salvarNovoMaterial()">OK</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUNA DIREITA -->
+    <div>
+      <!-- Itens selecionados -->
+      <div class="card">
+        <div class="card-title"><span class="dot"></span>Itens do orçamento</div>
+        <div id="itens-lista">
+          <p style="font-size:13px;color:var(--muted);padding:8px 0">Selecione materiais ao lado →</p>
+        </div>
+
+        <!-- Mão de obra -->
+        <div class="mo-block" id="mo-block">
+          <div class="card-title" style="margin-bottom:10px"><span class="dot" style="background:var(--purple)"></span>Mão de obra</div>
+          <div class="mo-row">
+            <span class="mo-label">% sobre valor de venda</span>
+            <input type="number" class="field" id="mo-pct" value="25" style="width:70px;padding:6px 8px;font-size:13px;text-align:center" oninput="validarMoPct(this)">
+            <span style="font-size:12px;color:var(--muted)">%</span>
+            <span class="mo-val" id="mo-val-display">R$ 0</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:6px">Calculado sobre o valor final de venda</div>
+        </div>
+
+        <!-- Margem -->
+        <div class="margem-block">
+          <div class="margem-header">
+            <span class="margem-label">Margem de venda</span>
+            <span class="margem-val" id="margem-display">30%</span>
+          </div>
+          <input type="range" id="margem-slider" min="5" max="80" value="30" oninput="updateMargem(this.value)">
+          <div class="margem-bars">
+            <div class="mbar">
+              <div class="mbar-label">Custo total</div>
+              <div class="mbar-val amber" id="custo-total-display">R$ 0</div>
+            </div>
+            <div class="mbar">
+              <div class="mbar-label">Lucro estimado</div>
+              <div class="mbar-val green" id="lucro-display">R$ 0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div class="total-block" id="total-block" style="display:none">
+          <div class="total-row"><span>Subtotal materiais</span><span id="sub-mat">R$ 0</span></div>
+          <div class="total-row highlight"><span>Mão de obra</span><span id="sub-mo">R$ 0</span></div>
+          <div class="total-row"><span>Margem <span id="margem-pct-label">30</span>%</span><span id="sub-margem">R$ 0</span></div>
+          <hr class="total-divider">
+          <div class="total-final">
+            <span class="label">Venda</span>
+            <span class="val" id="total-venda">R$ 0</span>
+          </div>
+          <div class="lucro-bar">
+            <div class="lucro-label">
+              <span>Lucro</span><span id="lucro-pct-label">0%</span>
+            </div>
+            <div class="lucro-bar-track"><div class="lucro-bar-fill" id="lucro-bar-fill" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="salvarOrcamento()">Salvar orçamento</button>
+        <button class="btn btn-secondary" onclick="limparOrcamento()">Limpar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LISTA ORÇAMENTOS ===== -->
+<div class="screen" id="screen-lista">
+  <div class="orc-header">
+    <h2>Orçamentos</h2>
+    <div id="badges-status" style="display:flex;gap:8px"></div>
+    <input class="search-field" placeholder="Buscar cliente ou serviço..." id="search-input" oninput="filtrarOrcamentos()">
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard-orc" style="margin-bottom:20px"></div>
+
+  <div class="card">
+    <div class="orc-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nº</th><th>Cliente</th><th>Serviço</th>
+            <th>Custo</th><th>Venda</th><th>Lucro</th><th>Margem</th>
+            <th>Data</th><th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="lista-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RELATÓRIO ===== -->
+<div class="screen" id="screen-relatorio">
+  <div class="orc-header">
+    <h2>Relatório mensal</h2>
+    <select class="search-field" id="sel-mes" onchange="renderRelatorio()" style="width:180px">
+      <option value="3">Março 2026</option>
+      <option value="2">Fevereiro 2026</option>
+      <option value="1">Janeiro 2026</option>
+    </select>
+    <button class="btn-ghost" onclick="gerarPDFRelatorio()" style="background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700">
+      ↓ Gerar PDF
+    </button>
+  </div>
+  <div class="rel-grid">
+    <div class="kpi">
+      <div class="kpi-label">Faturamento</div>
+      <div class="kpi-val td-amber" id="rel-fat">R$ 0</div>
+      <div class="kpi-sub" style="color:var(--muted)" id="rel-fat-orc">0 orçamentos</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Custo total</div>
+      <div class="kpi-val" id="rel-custo">R$ 0</div>
+      <div class="kpi-sub" style="color:var(--muted)">Materiais + mão de obra</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Lucro líquido</div>
+      <div class="kpi-val td-green" id="rel-lucro">R$ 0</div>
+      <div class="kpi-sub" id="rel-margem-media" style="color:var(--muted)">Margem 0%</div>
+    </div>
+  </div>
+  <div class="rel-bottom">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Lucro por cliente</div>
+      <div id="ranking-clientes"></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot"></span>Orçamentos do mês</div>
+      <div class="orc-table-wrap">
+        <table>
+          <thead><tr><th>Cliente</th><th>Venda</th><th>Lucro</th><th>Status</th></tr></thead>
+          <tbody id="rel-tabela"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MATERIAIS ===== -->
+<div class="screen" id="screen-materiais">
+  <div class="orc-header">
+    <h2>Gestão de materiais</h2>
+    <button class="btn-ghost" onclick="toggleCategorias()">🏷️ Categorias</button>
+    <button class="btn-ghost" onclick="toggleNovoMatGlobal()">+ Novo material</button>
+  </div>
+
+  <!-- PAINEL CATEGORIAS -->
+  <div class="novo-mat-form" id="painel-categorias" style="margin-bottom:16px">
+    <div class="card-title" style="margin-bottom:14px">Gerenciar categorias</div>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px">
+      <input class="field" id="nova-cat-input" placeholder="Nome da nova categoria..." style="max-width:280px">
+      <button class="btn-ghost" onclick="adicionarCategoria()">+ Adicionar</button>
+    </div>
+    <div id="lista-categorias" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:10px">Clique em uma categoria para renomear. × para remover.</div>
+  </div>
+
+  <!-- FORM NOVO MATERIAL -->
+  <div class="novo-mat-form" id="novo-mat-form-global" style="margin-bottom:16px">
+    <div class="card-title" style="margin-bottom:12px">Adicionar material</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 80px;gap:8px;align-items:end">
+      <div class="field-group" style="margin:0">
+        <label class="field-label">Nome</label>
+        <input class="field" id="g-nm-nome" placeholder="Nome do material">
+      </div>
+      <div class="field-group" style="margin:0">
+        <label class="field-label">Categoria</label>
+        <select class="field" id="g-nm-cat" onchange="toggleNovaCatGlobal(this)">
+        </select>
+      </div>
+      <div class="field-group" id="g-nm-cat-nova-wrap" style="display:none;margin:0">
+        <label class="field-label">Nova categoria</label>
+        <input class="field" id="g-nm-cat-nova" placeholder="Digite o nome">
+      </div>
+      <div class="field-group" style="margin:0">
+        <label class="field-label">Unidade</label>
+        <select class="field" id="g-nm-unit">
+          <option value="m²">m²</option><option value="ml">ml</option>
+          <option value="un">un</option><option value="pct">pct</option>
+          <option value="hr">hr</option><option value="dia">dia</option>
+          <option value="uso">uso</option><option value="m">m</option>
+          <option value="placa">placa</option><option value="barra">barra</option>
+          <option value="rolo">rolo</option><option value="kit">kit</option>
+        </select>
+      </div>
+      <div class="field-group" style="margin:0">
+        <label class="field-label">Custo (R$)</label>
+        <input class="field" id="g-nm-custo" type="number" placeholder="0,00">
+      </div>
+      <div class="field-group" style="margin:0">
+        <label class="field-label" style="visibility:hidden">.</label>
+        <button class="btn btn-primary" style="margin:0;padding:10px 0;font-size:11px" onclick="salvarNovoMaterialGlobal()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTRO POR CATEGORIA -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center">
+    <span style="font-size:12px;color:var(--muted);font-weight:600">Filtrar:</span>
+    <button class="btn-ghost active-cat" id="cat-filter-all" onclick="filtrarPorCategoria('',this)" style="padding:4px 12px;font-size:11px;background:var(--accent);color:#fff;border-color:var(--accent)">Todos</button>
+    <div id="cat-filter-btns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+  </div>
+
+  <div class="card">
+    <div class="orc-table-wrap">
+      <table>
+        <thead><tr><th>Material</th><th>Categoria</th><th>Unidade</th><th>Custo</th><th>Ações</th></tr></thead>
+        <tbody id="materiais-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== USUÁRIOS ===== -->
+<div class="screen" id="screen-usuarios">
+  <div class="orc-header">
+    <h2>Gestão de usuários</h2>
+    <button class="btn-ghost" onclick="toggleFormUsuario()">+ Novo usuário</button>
+  </div>
+
+  <!-- Form novo usuário -->
+  <div class="novo-mat-form" id="form-novo-usuario" style="margin-bottom:16px">
+    <div class="card-title" style="margin-bottom:14px">Criar novo acesso</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;align-items:end">
+      <div class="field-group" style="margin:0">
+        <label class="field-label">Nome completo</label>
+        <input class="field" id="nu-nome" placeholder="Ex: João Silva">
+      </div>
+      <div class="field-group" style="margin:0">
+        <label class="field-label">Usuário (login)</label>
+        <input class="field" id="nu-usuario" placeholder="Ex: joao">
+      </div>
+      <div class="field-group" style="margin:0">
+        <label class="field-label">Senha</label>
+        <input class="field" id="nu-senha" placeholder="Senha de acesso">
+      </div>
+      <div class="field-group" style="margin:0">
+        <label class="field-label" style="visibility:hidden">.</label>
+        <button class="btn btn-primary" style="margin:0;padding:11px 0;font-size:12px" onclick="criarUsuario()">Criar acesso</button>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-top:10px">
+      As permissões podem ser ajustadas após a criação. Somente o <strong>admin</strong> pode gerenciar usuários.
+    </div>
+  </div>
+
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th><th>Usuário</th><th>Senha</th><th>Perfil</th><th>Permissões</th><th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="usuarios-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- MODAL EDITAR USUÁRIO -->
+<div class="modal-overlay" id="modal-editar-usuario" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:500px">
+    <h3>Editar usuário</h3>
+    <input type="hidden" id="eu-id">
+    <div class="field-row" style="margin-bottom:14px">
+      <div class="field-group" style="margin:0">
+        <label class="field-label">Nome completo</label>
+        <input class="field" id="eu-nome" placeholder="Nome">
+      </div>
+      <div class="field-group" style="margin:0">
+        <label class="field-label">Usuário (login)</label>
+        <input class="field" id="eu-usuario" placeholder="login">
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Nova senha <span style="color:var(--muted);font-weight:400">(deixe em branco para não alterar)</span></label>
+      <input class="field" id="eu-senha" type="password" placeholder="••••••••">
+    </div>
+
+    <!-- PERMISSÕES -->
+    <div style="margin-top:4px">
+      <div class="card-title" style="margin-bottom:12px"><span class="dot"></span>Permissões de acesso</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="eu-perms-grid"></div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-primary" style="flex:1" onclick="salvarEdicaoUsuario()">Salvar</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="document.getElementById('modal-editar-usuario').classList.remove('open')">Cancelar</button>
+    </div>
+  </div>
+</div><!-- MODAL STATUS -->
+<div class="modal-overlay" id="modal-overlay" onclick="fecharModal(event)">
+  <div class="modal">
+    <h3 id="modal-title">Detalhe do orçamento</h3>
+    <div id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" style="flex:1" onclick="atualizarStatus('Aprovado')">Aprovar</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="atualizarStatus('Aguardando')">Aguardando</button>
+      <button class="btn" style="flex:1;background:var(--red);color:#fff" onclick="atualizarStatus('Recusado')">Recusar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR MATERIAL -->
+<div class="modal-overlay" id="modal-material" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:420px">
+    <h3>Editar material</h3>
+    <input type="hidden" id="edit-mat-id">
+    <div class="field-group">
+      <label class="field-label">Nome</label>
+      <input class="field" id="edit-mat-nome">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Categoria</label>
+      <select class="field" id="edit-mat-cat" onchange="toggleNovaCategoria(this)">
+        <option>ACM</option>
+        <option>PVC</option>
+        <option>Acrílico</option>
+        <option>Metalon</option>
+        <option>Fixação</option>
+        <option>Elétrico</option>
+        <option>Equipamento</option>
+        <option>Logística</option>
+        <option>Serviço</option>
+        <option>Outros</option>
+        <option value="__nova__">+ Nova categoria...</option>
+      </select>
+      <input class="field" id="edit-mat-cat-nova" placeholder="Digite a nova categoria" style="display:none;margin-top:6px">
+    </div>
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label">Unidade</label>
+        <select class="field" id="edit-mat-unit">
+          <option value="m²">m²</option>
+          <option value="ml">ml</option>
+          <option value="un">un</option>
+          <option value="pct">pct</option>
+          <option value="hr">hr</option>
+          <option value="dia">dia</option>
+          <option value="uso">uso</option>
+          <option value="m">m</option>
+          <option value="placa">placa</option>
+          <option value="barra">barra</option>
+          <option value="rolo">rolo</option>
+          <option value="kit">kit</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Custo (R$)</label>
+        <input class="field" id="edit-mat-custo" type="number" step="0.01">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" style="flex:1" onclick="salvarEdicaoMaterial()">Salvar</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="document.getElementById('modal-material').classList.remove('open')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR ORÇAMENTO -->
+<div class="modal-overlay" id="modal-editar-orc" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:680px;max-height:92vh;overflow-y:auto">
+    <h3 id="edit-orc-title">Editar orçamento</h3>
+    <!-- Margem + MO + Pagamento -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+      <div>
+        <label class="field-label">Margem de venda (%)</label>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input class="field" id="edit-margem" type="number" min="1" max="89" value="30" oninput="validarCamposEdit();atualizarTotaisEdit()" style="font-size:13px;padding:8px 10px">
+          <span id="edit-margem-preview" style="font-size:13px;font-weight:700;color:var(--accent);white-space:nowrap">30%</span>
+        </div>
+      </div>
+      <div>
+        <label class="field-label">Mão de obra (%)</label>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input class="field" id="edit-mo-pct" type="number" min="0" max="89" value="25" oninput="validarCamposEdit();atualizarTotaisEdit()" style="font-size:13px;padding:8px 10px">
+          <span id="edit-mo-preview" style="font-size:13px;font-weight:700;color:var(--purple);white-space:nowrap">25%</span>
+        </div>
+      </div>
+      <div>
+        <label class="field-label">Forma de pagamento</label>
+        <select class="field" id="edit-pagamento" onchange="toggleCartaoTaxa()" style="font-size:13px;padding:8px 10px">
+          <option value="dinheiro">Dinheiro / PIX</option>
+          <option value="boleto">Boleto</option>
+          <option value="cartao_debito">Cartão débito</option>
+          <option value="cartao_credito">Cartão crédito</option>
+          <option value="cheque">Cheque</option>
+          <option value="transferencia">Transferência</option>
+        </select>
+      </div>
+      <div id="cartao-taxa-wrap" style="display:none">
+        <label class="field-label">Taxa do cartão (%)</label>
+        <input class="field" id="edit-taxa-cartao" type="number" min="0" max="10" step="0.1" value="2.5" oninput="atualizarTotaisEdit()" style="font-size:13px;padding:8px 10px" placeholder="Ex: 2.5">
+      </div>
+      <div id="cartao-taxa-vazio" style="display:block"></div>
+    </div>
+    <!-- Aviso limite -->
+    <div id="edit-limite-aviso" style="display:none;font-size:12px;color:var(--red);background:rgba(204,34,34,0.08);border-radius:6px;padding:6px 10px;margin-bottom:10px">
+      ⚠️ Margem + Mão de obra não pode ultrapassar 90%
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Ajuste itens, quantidades, margem e mão de obra. Total recalculado automaticamente.</div>
+    <div id="edit-orc-itens"></div>
+    <!-- Linha mão de obra -->
+    <div id="edit-mo-line"></div>
+    <div style="margin-top:14px;background:var(--bg3);border:1px dashed var(--border2);border-radius:8px;padding:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px">Adicionar item</div>
+      <div style="display:grid;grid-template-columns:1fr 80px 90px auto;gap:8px;align-items:end">
+        <div>
+          <label class="field-label">Material</label>
+          <select class="field" id="edit-add-mat" style="font-size:12px;padding:8px 10px"></select>
+        </div>
+        <div>
+          <label class="field-label">Qtd</label>
+          <input class="field" id="edit-add-qty" type="number" value="1" min="0.01" step="0.01" style="font-size:12px;padding:8px 10px">
+        </div>
+        <div>
+          <label class="field-label">Custo unit.</label>
+          <input class="field" id="edit-add-custo" type="number" step="0.01" style="font-size:12px;padding:8px 10px" placeholder="Auto">
+        </div>
+        <div>
+          <label class="field-label" style="visibility:hidden">.</label>
+          <button class="btn-ghost" style="padding:8px 14px;font-size:12px;white-space:nowrap" onclick="editOrcAddItem()">+ Add</button>
+        </div>
+      </div>
+    </div>
+    <!-- Totais -->
+    <div id="edit-orc-totais" style="margin-top:14px;background:var(--bg3);border-radius:8px;padding:12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px"></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" style="flex:1" onclick="salvarEdicaoOrcamento()">Salvar alterações</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="document.getElementById('modal-editar-orc').classList.remove('open')">Cancelar</button>
+    </div>
+  </div>
+</div>
+<div id="install-banner" style="
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:10000;
+  background:var(--header);padding:14px 20px;
+  padding-bottom:max(14px, env(safe-area-inset-bottom));
+  border-top:2px solid var(--accent);
+  align-items:center;gap:12px;
+">
+  <div style="width:44px;height:44px;border-radius:10px;background:#e8520a;display:flex;align-items:center;justify-content:center;font-family:Arial;font-weight:900;font-size:13px;color:#fff;flex-shrink:0">MT</div>
+  <div style="flex:1">
+    <div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:#fff">Instalar MTPRO</div>
+    <div id="banner-desc" style="font-size:11px;color:rgba(255,255,255,0.55);margin-top:2px"></div>
+  </div>
+  <button id="banner-install-btn" style="display:none;background:var(--accent);border:none;color:#fff;border-radius:6px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap">Instalar</button>
+  <button onclick="document.getElementById('install-banner').style.display='none';localStorage.setItem('mt_banner','0')" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.6);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap">Fechar</button>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen" style="
+  position:fixed;inset:0;z-index:9999;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+">
+  <div style="width:100%;max-width:400px;padding:24px">
+    <!-- Logo / Header -->
+    <div style="
+      background:var(--header);border-radius:12px 12px 0 0;
+      padding:28px 32px 24px;text-align:center;
+    ">
+      <div style="font-family:'Inter',sans-serif;font-size:22px;font-weight:800;color:#fff;letter-spacing:0.01em">MT<span style="color:var(--accent)">PRO</span></div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px">Sistema de Orçamentos</div>
+    </div>
+    <!-- Form -->
+    <div style="background:#fff;border-radius:0 0 12px 12px;padding:28px 32px;box-shadow:0 8px 32px rgba(0,0,0,0.12)">
+      <div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:5px">Usuário</div>
+      <input id="login-user" class="field" placeholder="seu.usuario" autocomplete="username"
+        style="margin-bottom:14px" onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()">
+      <div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:5px">Senha</div>
+      <input id="login-pass" class="field" type="password" placeholder="••••••••" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')fazerLogin()">
+      <div id="login-erro" style="
+        display:none;font-size:12px;color:var(--red);
+        background:rgba(204,34,34,0.08);border-radius:6px;
+        padding:8px 12px;margin-top:10px;font-weight:500;
+      ">Usuário ou senha incorretos.</div>
+      <button onclick="fazerLogin()" style="
+        width:100%;margin-top:18px;padding:13px;
+        background:var(--accent);color:#fff;border:none;
+        border-radius:8px;font-family:'Inter',sans-serif;
+        font-size:14px;font-weight:700;cursor:pointer;
+        transition:all .2s;
+      " onmouseover="this.style.background='#c94208'" onmouseout="this.style.background='var(--accent)'">
+        Entrar
+      </button>
+      <div style="font-size:11px;color:var(--muted2);text-align:center;margin-top:16px">
+        Acesso restrito — uso interno
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP INICIAL (primeiro acesso) -->
+<div id="setup-screen" style="
+  position:fixed;inset:0;z-index:9998;
+  background:var(--bg);
+  display:none;align-items:center;justify-content:center;
+">
+  <div style="width:100%;max-width:480px;padding:24px">
+    <div style="background:var(--header);border-radius:12px 12px 0 0;padding:28px 32px 24px;text-align:center">
+      <div style="font-family:'Inter',sans-serif;font-size:22px;font-weight:800;color:#fff">MT<span style="color:var(--accent)">PRO</span></div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px">Configuração inicial — Bem-vindo!</div>
+    </div>
+    <div style="background:#fff;border-radius:0 0 12px 12px;padding:28px 32px;box-shadow:0 8px 32px rgba(0,0,0,0.12)">
+      <div style="background:rgba(232,82,10,0.08);border:1px solid rgba(232,82,10,0.2);border-radius:8px;padding:12px 14px;margin-bottom:20px;font-size:13px;color:var(--accent);font-weight:500">
+        🎉 Primeiro acesso detectado! Configure sua empresa agora.
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Nome da sua empresa</label>
+        <input class="field" id="setup-empresa" placeholder="Ex: Silva Comunicação Visual" style="background:#fff">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Seu nome completo</label>
+        <input class="field" id="setup-nome" placeholder="Ex: João Silva">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="field-group" style="margin:0">
+          <label class="field-label">Novo usuário (login)</label>
+          <input class="field" id="setup-usuario" placeholder="Ex: joao" style="background:#fff">
+        </div>
+        <div class="field-group" style="margin:0">
+          <label class="field-label">Nova senha</label>
+          <input class="field" id="setup-senha" type="password" placeholder="Mínimo 6 caracteres" style="background:#fff">
+        </div>
+      </div>
+      <div class="field-group" style="margin-top:14px">
+        <label class="field-label">Confirmar senha</label>
+        <input class="field" id="setup-senha2" type="password" placeholder="Repita a senha" style="background:#fff">
+      </div>
+      <div id="setup-erro" style="display:none;font-size:12px;color:var(--red);background:rgba(204,34,34,0.08);border-radius:6px;padding:8px 12px;margin-top:10px;font-weight:500"></div>
+      <button onclick="finalizarSetup()" style="
+        width:100%;margin-top:18px;padding:13px;
+        background:var(--accent);color:#fff;border:none;
+        border-radius:8px;font-family:'Inter',sans-serif;
+        font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;
+      " onmouseover="this.style.background='#c94208'" onmouseout="this.style.background='var(--accent)'">
+        Configurar e entrar no sistema
+      </button>
+      <div style="font-size:11px;color:var(--muted2);text-align:center;margin-top:14px">
+        Após configurar, use seu novo usuário e senha para entrar.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast">Salvo com sucesso!</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCEe7m5BS1wd-8sq_B9J3Lp_NQWxJ2Xx-k",
+  authDomain: "sistema-comercial-7cc4a.firebaseapp.com",
+  projectId: "sistema-comercial-7cc4a",
+  storageBucket: "sistema-comercial-7cc4a.firebasestorage.app",
+  messagingSenderId: "903994134434",
+  appId: "1:903994134434:web:670664565d8b484508ecfb"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ── USUÁRIOS INTERNOS ──
+// Senha padrão inicial: cada usuário pode ser criado pelo admin
+const USUARIOS_PADRAO = [
+  { usuario: 'admin', senha: 'admin123', nome: 'Administrador', perfil: 'admin', primeiroAcesso: true },
+];
+
+let _usuarioLogado = null;
+
+async function carregarUsuarios() {
+  const snap = await getDocs(collection(db,'mt_usuarios'));
+  if(snap.empty) {
+    for(const u of USUARIOS_PADRAO) await addDoc(collection(db,'mt_usuarios'),u);
+    return USUARIOS_PADRAO;
+  }
+  return snap.docs.map(d=>({id:d.id,...d.data()}));
+}
+
+function mostrarHeaderUsuario(nome) {
+  const headerEl = document.querySelector('.header');
+  if(!headerEl) return;
+  // Remove tag anterior se existir
+  const existing = headerEl.querySelector('.user-tag');
+  if(existing) existing.remove();
+  const tag = document.createElement('div');
+  tag.className = 'user-tag';
+  tag.style.cssText='display:flex;align-items:center;gap:10px;margin-left:16px';
+  tag.innerHTML=`
+    <span style="font-size:12px;color:rgba(255,255,255,0.55)">${nome}</span>
+    <button onclick="fazerLogout()" style="font-size:11px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-family:Inter,sans-serif;font-weight:600">Sair</button>
+  `;
+  headerEl.appendChild(tag);
+}
+
+function atualizarLogoEmpresa(nomeEmpresa) {
+  const logoEl = document.querySelector('.logo');
+  if(logoEl && nomeEmpresa) {
+    const partes = nomeEmpresa.split(' ');
+    const primeiro = partes[0];
+    const resto = partes.slice(1).join(' ');
+    logoEl.innerHTML = `${primeiro}${resto?' <span style="color:var(--accent)">'+resto+'</span>':''}`;
+  }
+}
+
+window.fazerLogin = async function() {
+  const usuario = document.getElementById('login-user').value.trim().toLowerCase();
+  const senha   = document.getElementById('login-pass').value;
+  const erro    = document.getElementById('login-erro');
+  if(!usuario||!senha){ erro.style.display='block'; erro.textContent='Preencha usuário e senha.'; return; }
+  const usuarios = await carregarUsuarios();
+  const found = usuarios.find(u => u.usuario===usuario && u.senha===senha);
+  if(!found) { erro.style.display='block'; erro.textContent='Usuário ou senha incorretos.'; return; }
+
+  // Verifica se é primeiro acesso
+  if(found.primeiroAcesso) {
+    _usuarioLogado = found;
+    document.getElementById('login-screen').style.display='none';
+    const setup = document.getElementById('setup-screen');
+    if(setup) setup.style.display='flex';
+    return;
+  }
+
+  _usuarioLogado = found;
+  sessionStorage.setItem('mt_user', JSON.stringify({id:found.id, usuario:found.usuario, nome:found.nome, perfil:found.perfil, empresa:found.empresa||''}));
+  document.getElementById('login-screen').style.display='none';
+  mostrarHeaderUsuario(found.nome);
+  // Atualiza logo com nome da empresa
+  if(found.empresa) atualizarLogoEmpresa(found.empresa);
+  await init();
+};
+
+window.finalizarSetup = async function() {
+  const empresa  = document.getElementById('setup-empresa').value.trim();
+  const nome     = document.getElementById('setup-nome').value.trim();
+  const usuario  = document.getElementById('setup-usuario').value.trim().toLowerCase();
+  const senha    = document.getElementById('setup-senha').value;
+  const senha2   = document.getElementById('setup-senha2').value;
+  const erro     = document.getElementById('setup-erro');
+
+  // Validações
+  if(!empresa||!nome||!usuario||!senha) { erro.style.display='block'; erro.textContent='Preencha todos os campos!'; return; }
+  if(senha.length < 6) { erro.style.display='block'; erro.textContent='A senha precisa ter pelo menos 6 caracteres!'; return; }
+  if(senha !== senha2) { erro.style.display='block'; erro.textContent='As senhas não coincidem!'; return; }
+
+  // Atualiza o admin no Firebase
+  const snap = await getDocs(collection(db,'mt_usuarios'));
+  const adminDoc = snap.docs.find(d=>d.data().primeiroAcesso===true);
+  if(adminDoc) {
+    await updateDoc(doc(db,'mt_usuarios',adminDoc.id), {
+      nome, usuario, senha, empresa,
+      perfil:'admin', primeiroAcesso: false
+    });
+  }
+
+  // Salva config da empresa
+  try { await addDoc(collection(db,'mt_config'),{empresa, criadoEm: new Date().toISOString()}); } catch(e){}
+
+  // Loga automaticamente
+  _usuarioLogado = {id:adminDoc?.id, usuario, nome, empresa, perfil:'admin'};
+  sessionStorage.setItem('mt_user', JSON.stringify(_usuarioLogado));
+  document.getElementById('setup-screen').style.display='none';
+  mostrarHeaderUsuario(nome);
+  atualizarLogoEmpresa(empresa);
+  showToast('Configuração salva! Bem-vindo ao MTPRO, '+nome+'! 🎉');
+  await init();
+};
+
+window.fazerLogout = function() {
+  sessionStorage.removeItem('mt_user');
+  location.reload();
+};
+
+// Verifica sessão ao carregar
+const _sessao = sessionStorage.getItem('mt_user');
+if(_sessao) {
+  try {
+    _usuarioLogado = JSON.parse(_sessao);
+    document.getElementById('login-screen').style.display='none';
+    mostrarHeaderUsuario(_usuarioLogado.nome);
+    if(_usuarioLogado.empresa) atualizarLogoEmpresa(_usuarioLogado.empresa);
+    document.addEventListener('DOMContentLoaded', ()=>init());
+  } catch(e){ sessionStorage.removeItem('mt_user'); }
+}
+
+// ── MATERIAIS PADRÃO ──
+// Materiais de exemplo — o usuário pode editar, adicionar e remover na aba Materiais
+const MATERIAIS_PADRAO = [
+  {nome:'Material 1',cat:'Geral',unit:'un',custo:10},
+  {nome:'Material 2',cat:'Geral',unit:'m²',custo:50},
+  {nome:'Mão de obra',cat:'Serviço',unit:'hr',custo:80},
+  {nome:'Frete',cat:'Logística',unit:'uso',custo:20},
+];
+
+// ── STATE ──
+window._materiais = [];
+window._clientes = [];
+window._orcamentos = [];
+window._itensSelecionados = {};
+window._modalOrcId = null;
+
+// ── INIT ──
+async function carregarCategorias() {
+  window._categoriasExtras = [];
+  try {
+    const snap = await getDocs(collection(db,'mt_categorias'));
+    snap.docs.forEach(d=>{
+      const nome = d.data().nome;
+      if(nome && !window._categoriasExtras.includes(nome)) {
+        window._categoriasExtras.push(nome);
+      }
+    });
+  } catch(e){}
+}
+
+async function init() {
+  await carregarCategorias();
+  await carregarMateriais();
+  await carregarClientes();
+  await carregarOrcamentos();
+  renderCatalogo();
+  renderListaOrcamentos();
+  renderRelatorio();
+  renderTabelaMateriais();
+  atualizarNumeroOrcamento();
+  renderFiltrosCategorias();
+  popularSelectCategorias('g-nm-cat');
+  // Controle de acesso: só admin vê aba Usuários
+  const navU = document.getElementById('nav-usuarios');
+  if(navU) navU.style.display = isAdmin?'':'none';
+}
+
+// ── MATERIAIS ──
+async function carregarMateriais() {
+  const snap = await getDocs(collection(db,'mt_materiais'));
+  if(snap.empty) {
+    // Seed
+    for(const m of MATERIAIS_PADRAO) await addDoc(collection(db,'mt_materiais'),m);
+    const snap2 = await getDocs(collection(db,'mt_materiais'));
+    window._materiais = snap2.docs.map(d=>({id:d.id,...d.data()}));
+  } else {
+    window._materiais = snap.docs.map(d=>({id:d.id,...d.data()}));
+  }
+}
+
+function renderCatalogo() {
+  const cats = [...new Set(window._materiais.map(m=>m.cat))];
+  const el = document.getElementById('catalogo-lista');
+  el.innerHTML = cats.map(cat=>`
+    <div class="mat-section">
+      <div class="mat-category">${cat}</div>
+      ${window._materiais.filter(m=>m.cat===cat).map(m=>`
+        <div class="mat-item ${window._itensSelecionados[m.id]?'added':''}" id="mi-${m.id}" onclick="toggleMaterial('${m.id}')">
+          <div class="mat-check">${window._itensSelecionados[m.id]?'✓':''}</div>
+          <div class="mat-info">
+            <div class="mat-nome">${m.nome}</div>
+            <div class="mat-unit">${m.unit}</div>
+          </div>
+          <div class="mat-custo">R$ ${m.custo.toLocaleString('pt-BR',{minimumFractionDigits:2})}</div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+window.toggleMaterial = function(id) {
+  const m = window._materiais.find(x=>x.id===id);
+  if(!m) return;
+  if(window._itensSelecionados[id]) {
+    delete window._itensSelecionados[id];
+  } else {
+    window._itensSelecionados[id] = {...m, qty:1};
+  }
+  renderCatalogo();
+  renderItens();
+};
+
+window.toggleNovoMat = function() {
+  document.getElementById('novo-mat-form').classList.toggle('open');
+};
+window.toggleNovoMatGlobal = function() {
+  document.getElementById('novo-mat-form-global').classList.toggle('open');
+  if(document.getElementById('novo-mat-form-global').classList.contains('open')) {
+    popularSelectCategorias('g-nm-cat');
+  }
+};
+window.toggleCategorias = function() {
+  document.getElementById('painel-categorias').classList.toggle('open');
+  if(document.getElementById('painel-categorias').classList.contains('open')) renderListaCategorias();
+};
+
+// ── CATEGORIAS ──
+function getCategorias() {
+  const dosMateriais = window._materiais.map(m=>m.cat||'Outros');
+  const extras = window._categoriasExtras||[];
+  const todas = [...new Set([...dosMateriais, ...extras])].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+  const sem = todas.filter(c=>c!=='Outros');
+  return [...sem, 'Outros'];
+}
+
+function popularSelectCategorias(selectId, valorAtual) {
+  const sel = document.getElementById(selectId);
+  if(!sel) return;
+  const cats = getCategorias();
+  const val = valorAtual||sel.value||'';
+  sel.innerHTML = cats.map(c=>`<option value="${c}" ${c===val?'selected':''}>${c}</option>`).join('')
+    + '<option value="__nova__">+ Nova categoria...</option>';
+}
+
+function renderListaCategorias() {
+  const cats = getCategorias();
+  const el = document.getElementById('lista-categorias');
+  if(!el) return;
+  el.innerHTML = cats.map(cat=>`
+    <div style="display:flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:4px 10px 4px 12px">
+      <span style="font-size:13px;font-weight:500;cursor:pointer" onclick="renomearCategoria('${cat}')" title="Clique para renomear">${cat}</span>
+      ${cat!=='Outros'?`<span onclick="removerCategoria('${cat}')" style="color:var(--muted2);cursor:pointer;font-size:16px;line-height:1;margin-left:4px" title="Remover">×</span>`:''}
+    </div>
+  `).join('');
+  // Atualiza filtros
+  renderFiltrosCategorias();
+}
+
+function renderFiltrosCategorias() {
+  const cats = getCategorias();
+  const el = document.getElementById('cat-filter-btns');
+  if(!el) return;
+  el.innerHTML = cats.map(cat=>`
+    <button class="btn-ghost" onclick="filtrarPorCategoria('${cat}',this)" style="padding:4px 12px;font-size:11px">${cat}</button>
+  `).join('');
+}
+
+window._catFiltro = '';
+window.filtrarPorCategoria = function(cat, btn) {
+  window._catFiltro = cat;
+  document.querySelectorAll('#cat-filter-btns .btn-ghost, #cat-filter-all').forEach(b=>{
+    b.style.background=''; b.style.color=''; b.style.borderColor='';
+  });
+  if(btn) { btn.style.background='var(--accent)'; btn.style.color='#fff'; btn.style.borderColor='var(--accent)'; }
+  renderTabelaMateriais();
+};
+
+window.adicionarCategoria = async function() {
+  const nome = document.getElementById('nova-cat-input').value.trim();
+  if(!nome) { showToast('Digite o nome da categoria!'); return; }
+  const cats = getCategorias();
+  if(cats.includes(nome)) { showToast('Categoria "'+nome+'" já existe!'); return; }
+  // Salva no Firebase
+  try { await addDoc(collection(db,'mt_categorias'),{nome}); } catch(e){}
+  // Adiciona ao estado local
+  window._categoriasExtras = window._categoriasExtras||[];
+  window._categoriasExtras.push(nome);
+  document.getElementById('nova-cat-input').value='';
+  // Atualiza toda a UI
+  renderListaCategorias();
+  renderFiltrosCategorias();
+  popularSelectCategorias('g-nm-cat');
+  popularSelectCategorias('edit-mat-cat');
+  showToast('Categoria "'+nome+'" adicionada!');
+};
+
+window.renomearCategoria = async function(cat) {
+  const novo = prompt(`Renomear categoria "${cat}" para:`, cat);
+  if(!novo||!novo.trim()||novo===cat) return;
+  // Atualiza todos os materiais dessa categoria
+  const batch = window._materiais.filter(m=>m.cat===cat);
+  for(const m of batch) {
+    try { await updateDoc(doc(db,'mt_materiais',m.id),{cat:novo}); m.cat=novo; } catch(e){}
+  }
+  renderTabelaMateriais();
+  renderListaCategorias();
+  popularSelectCategorias('g-nm-cat');
+  popularSelectCategorias('edit-mat-cat');
+  renderCatalogo();
+  showToast(`"${cat}" renomeada para "${novo}"!`);
+};
+
+window.removerCategoria = async function(cat) {
+  const count = window._materiais.filter(m=>m.cat===cat).length;
+  const msg = count>0
+    ? `A categoria "${cat}" tem ${count} material(is). Eles irão para "Outros". Confirma?`
+    : `Remover categoria "${cat}"?`;
+  if(!confirm(msg)) return;
+  // Move materiais para Outros no Firebase
+  const batch = window._materiais.filter(m=>m.cat===cat);
+  for(const m of batch) {
+    try { await updateDoc(doc(db,'mt_materiais',m.id),{cat:'Outros'}); m.cat='Outros'; } catch(e){}
+  }
+  // Remove da coleção orc_categorias no Firebase
+  try {
+    const snap = await getDocs(collection(db,'mt_categorias'));
+    for(const d of snap.docs) {
+      if(d.data().nome===cat) await deleteDoc(doc(db,'mt_categorias',d.id));
+    }
+  } catch(e){}
+  // Remove do estado local
+  window._categoriasExtras = (window._categoriasExtras||[]).filter(c=>c!==cat);
+  // Atualiza UI
+  renderTabelaMateriais();
+  renderListaCategorias();
+  renderFiltrosCategorias();
+  popularSelectCategorias('g-nm-cat');
+  popularSelectCategorias('edit-mat-cat');
+  renderCatalogo();
+  showToast(`Categoria "${cat}" removida.`);
+};
+
+window.toggleNovaCatGlobal = function(sel) {
+  const wrap = document.getElementById('g-nm-cat-nova-wrap');
+  if(sel.value==='__nova__') {
+    wrap.style.display='block';
+    document.getElementById('g-nm-cat-nova').focus();
+  } else {
+    wrap.style.display='none';
+    document.getElementById('g-nm-cat-nova').value='';
+  }
+};
+
+
+
+window.salvarNovoMaterial = async function() {
+  const nome = document.getElementById('nm-nome').value.trim();
+  const unit = document.getElementById('nm-unit').value;
+  const custo = parseFloat(document.getElementById('nm-custo').value)||0;
+  if(!nome||!custo){showToast('Preencha nome e custo!');return;}
+  const ref = await addDoc(collection(db,'mt_materiais'),{nome,cat:'Outros',unit,custo});
+  window._materiais.push({id:ref.id,nome,cat:'Outros',unit,custo});
+  renderCatalogo();
+  renderTabelaMateriais();
+  document.getElementById('nm-nome').value='';
+  document.getElementById('nm-custo').value='';
+  showToast('Material adicionado!');
+};
+
+window.salvarNovoMaterialGlobal = async function() {
+  const nome  = document.getElementById('g-nm-nome').value.trim();
+  const unit  = document.getElementById('g-nm-unit').value;
+  const custo = parseFloat(document.getElementById('g-nm-custo').value)||0;
+  let cat     = document.getElementById('g-nm-cat')?.value||'Outros';
+  if(cat==='__nova__') { cat = document.getElementById('g-nm-cat-nova').value.trim()||'Outros'; }
+  if(!nome||!custo){showToast('Preencha nome e custo!');return;}
+  const ref = await addDoc(collection(db,'mt_materiais'),{nome,cat,unit,custo});
+  window._materiais.push({id:ref.id,nome,cat,unit,custo});
+  renderCatalogo();
+  renderTabelaMateriais();
+  renderListaCategorias();
+  renderFiltrosCategorias();
+  document.getElementById('g-nm-nome').value='';
+  document.getElementById('g-nm-custo').value='';
+  showToast('Material salvo!');
+};
+
+window.deletarMaterial = async function(id) {
+  if(!confirm('Remover este material?')) return;
+  await deleteDoc(doc(db,'mt_materiais',id));
+  window._materiais = window._materiais.filter(m=>m.id!==id);
+  renderTabelaMateriais();
+  renderCatalogo();
+  showToast('Material removido.');
+};
+
+function renderTabelaMateriais() {
+  const tb = document.getElementById('materiais-tbody');
+  const filtro = window._catFiltro||'';
+  const lista = filtro ? window._materiais.filter(m=>m.cat===filtro) : window._materiais;
+  tb.innerHTML = lista.map(m=>`
+    <tr>
+      <td>${m.nome}</td>
+      <td><span class="badge badge-blue">${m.cat}</span></td>
+      <td>${m.unit}</td>
+      <td class="td-val td-amber">R$ ${m.custo.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+      <td>
+        <button class="btn-ghost" style="padding:5px 10px;font-size:10px" onclick="editarCustoMaterial('${m.id}')">Editar</button>
+        <button class="btn-ghost" style="padding:5px 10px;font-size:10px;color:var(--red);border-color:var(--red);margin-left:4px" onclick="deletarMaterial('${m.id}')">Remover</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+window.editarCustoMaterial = function(id) {
+  const m = window._materiais.find(x=>x.id===id);
+  if(!m) return;
+  document.getElementById('edit-mat-id').value   = id;
+  document.getElementById('edit-mat-nome').value  = m.nome;
+  document.getElementById('edit-mat-custo').value = m.custo;
+  // Seleciona categoria
+  const catSel = document.getElementById('edit-mat-cat');
+  for(let i=0;i<catSel.options.length;i++) {
+    if(catSel.options[i].value===m.cat) { catSel.selectedIndex=i; break; }
+  }
+  // Seleciona unidade
+  const unitSel = document.getElementById('edit-mat-unit');
+  for(let i=0;i<unitSel.options.length;i++) {
+    if(unitSel.options[i].value===m.unit) { unitSel.selectedIndex=i; break; }
+  }
+  document.getElementById('modal-material').classList.add('open');
+};
+
+window.salvarEdicaoMaterial = async function() {
+  const id    = document.getElementById('edit-mat-id').value;
+  const nome  = document.getElementById('edit-mat-nome').value.trim();
+  let cat = document.getElementById('edit-mat-cat').value;
+  if(cat==='__nova__') { cat = document.getElementById('edit-mat-cat-nova').value.trim()||'Outros'; }
+  const unit  = document.getElementById('edit-mat-unit').value;
+  const custo = parseFloat(document.getElementById('edit-mat-custo').value)||0;
+  if(!nome||!custo) { showToast('Preencha todos os campos!'); return; }
+  await updateDoc(doc(db,'mt_materiais',id),{nome,cat,unit,custo});
+  const m = window._materiais.find(x=>x.id===id);
+  if(m) { m.nome=nome; m.cat=cat; m.unit=unit; m.custo=custo; }
+  document.getElementById('modal-material').classList.remove('open');
+  renderTabelaMateriais();
+  renderCatalogo();
+  showToast('Material atualizado!');
+};
+
+// ── GERAR PDF ORÇAMENTO INDIVIDUAL ──
+window.gerarPDFOrcamento = function(id) {
+  const o = window._orcamentos.find(x=>x.id===id);
+  if(!o) return;
+
+  const subMat  = Math.round((o.subMat||0)*100)/100;
+  const moVal   = Math.round((o.moVal||0)*100)/100;
+  const moPct   = o.moPct||25;
+  const taxaCard= o.taxaCartao||0;
+  const custo   = Math.round((o.custoTotal||0)*100)/100;
+  const venda   = Math.round((o.venda||0)*100)/100;
+  const lucro   = Math.round((o.lucro||0)*100)/100;
+  const margem  = o.margemPct||30;
+  const pagLabels = {'dinheiro':'Dinheiro / PIX','boleto':'Boleto','cartao_debito':'Cartão débito','cartao_credito':'Cartão crédito','cheque':'Cheque','transferencia':'Transferência'};
+  const pagLabel= pagLabels[o.pagamento]||'—';
+
+  const itensHTML = (o.itens||[]).map(i=>`
+    <tr>
+      <td>${i.nome}</td>
+      <td style="text-align:center">${i.qty} ${i.unit}</td>
+      <td style="text-align:right">R$ ${i.custo.toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+      <td style="text-align:right;font-weight:700">R$ ${(Math.round(i.custo*i.qty*100)/100).toLocaleString('pt-BR',{minimumFractionDigits:2})}</td>
+    </tr>
+  `).join('');
+
+  const fmtR = v => 'R$ '+(Math.round((v||0)*100)/100).toLocaleString('pt-BR',{minimumFractionDigits:2});
+
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8">
+  <title>Orçamento ${o.numero} — ${o.cliente}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,sans-serif;color:#1a1a1a;padding:40px;font-size:13px;background:#fff}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:20px;border-bottom:3px solid #e8520a}
+    .logo-box .logo{font-size:28px;font-weight:900;color:#1a2332}.logo-box .logo span{color:#e8520a}
+    .logo-box .sub{font-size:12px;color:#888;margin-top:4px}
+    .orc-info{text-align:right}
+    .orc-num{font-size:22px;font-weight:800;color:#e8520a}
+    .orc-status{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;margin-top:4px}
+    .status-ap{background:#e6f7ef;color:#0a8a4a}
+    .status-ag{background:#fff3e0;color:#e8520a}
+    .status-re{background:#fdecea;color:#cc2222}
+    .cliente-block{background:#f8f7f4;border-radius:10px;padding:16px 20px;margin-bottom:24px;display:flex;justify-content:space-between}
+    .cliente-block .label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+    .cliente-block .val{font-size:14px;font-weight:700;color:#1a1a1a}
+    .cliente-block .desc{font-size:12px;color:#666;margin-top:2px}
+    h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#1a2332;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #eee}
+    table{width:100%;border-collapse:collapse;margin-bottom:24px}
+    th{text-align:left;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.06em;padding:8px 12px;border-bottom:2px solid #eee;background:#f8f7f4}
+    td{padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:13px}
+    tr:last-child td{border-bottom:none}
+    tr:nth-child(even) td{background:#fafaf8}
+    .custo-block{background:#f8f7f4;border-radius:10px;padding:16px 20px;margin-bottom:24px}
+    .custo-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid #eee}
+    .custo-row:last-child{border-bottom:none;font-weight:700;font-size:14px;padding-top:10px;margin-top:4px}
+    .custo-row.total{color:#e8520a}
+    .kpi-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}
+    .kpi{background:#f8f7f4;border-radius:10px;padding:14px 16px;border-left:4px solid #e8520a}
+    .kpi.green{border-left-color:#0a8a4a}
+    .kpi.blue{border-left-color:#1a5fa8}
+    .kpi-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:5px}
+    .kpi-val{font-size:18px;font-weight:800;color:#1a1a1a}
+    .kpi-val.amber{color:#e8520a}.kpi-val.green{color:#0a8a4a}
+    .footer{margin-top:32px;padding-top:16px;border-top:1px solid #eee;display:flex;justify-content:space-between;font-size:11px;color:#aaa}
+    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+    @media print{body{padding:20px}button{display:none!important}.no-print{display:none}}
+  </style>
+  </head><body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-box">
+      <div class="logo">MT<span style="color:var(--accent)">PRO</span></div>
+      <div class="sub">Comunicação visual e fachadas comerciais</div>
+    </div>
+    <div class="orc-info">
+      <div class="orc-num">${o.numero||'#000'}</div>
+      <div style="font-size:12px;color:#888;margin-top:4px">Emitido em ${new Date(o.criadoEm||Date.now()).toLocaleDateString('pt-BR')}</div>
+      <div style="margin-top:6px"><span class="orc-status ${o.status==='Aprovado'?'status-ap':o.status==='Recusado'?'status-re':'status-ag'}">${o.status||'Aguardando'}</span></div>
+    </div>
+  </div>
+
+  <!-- CLIENTE -->
+  <div class="cliente-block">
+    <div>
+      <div class="label">Cliente</div>
+      <div class="val">${o.cliente}</div>
+      <div class="desc">${o.desc||''}</div>
+    </div>
+    <div style="text-align:right">
+      <div class="label">Pagamento</div>
+      <div class="val">${pagLabel}${taxaCard?` (taxa ${taxaCard}%)`:''}</div>
+      ${o.alteradoEm?`<div class="desc">Última edição: ${new Date(o.alteradoEm).toLocaleDateString('pt-BR')} — ${o.alteradoPor}</div>`:''}
+    </div>
+  </div>
+
+  <!-- ITENS -->
+  <h2>Itens do orçamento</h2>
+  <table>
+    <thead><tr><th>Material / Serviço</th><th style="text-align:center">Qtd</th><th style="text-align:right">Custo unit.</th><th style="text-align:right">Total</th></tr></thead>
+    <tbody>${itensHTML}</tbody>
+  </table>
+
+  <!-- COMPOSIÇÃO DO CUSTO -->
+  <h2>Composição do custo</h2>
+  <div class="custo-block">
+    <div class="custo-row"><span>Subtotal materiais</span><span>${fmtR(subMat)}</span></div>
+    <div class="custo-row"><span style="color:#6b46c1">Mão de obra (${moPct}% da venda)</span><span style="color:#6b46c1;font-weight:600">${fmtR(moVal)}</span></div>
+    ${taxaCard?`<div class="custo-row"><span style="color:#cc2222">Taxa ${pagLabel} (${taxaCard}%)</span><span style="color:#cc2222">${fmtR(Math.round(venda*taxaCard/100*100)/100)}</span></div>`:''}
+    <div class="custo-row total"><span>Custo total</span><span>${fmtR(custo)}</span></div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Valor de venda</div><div class="kpi-val amber">${fmtR(venda)}</div></div>
+    <div class="kpi green"><div class="kpi-label">Lucro estimado (${margem}%)</div><div class="kpi-val green">${fmtR(lucro)}</div></div>
+    <div class="kpi blue"><div class="kpi-label">Margem de contribuição</div><div class="kpi-val" style="color:#1a5fa8">${margem}%</div></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    ${o.moResponsavel?`<span>Responsável pela execução: <strong>${o.moResponsavel}</strong></span>`:'<span>MTPRO — Documento interno</span>'}
+    <span>Gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
+  </div>
+
+  <script>window.onload=()=>window.print()<\/script>
+  </body></html>`;
+
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+};
+
+
+window.gerarPDFRelatorio = function() {
+  const mes = parseInt(document.getElementById('sel-mes')?.value||3);
+  const nomes = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const orcs  = window._orcamentos.filter(o=>o.mes===mes&&o.status==='Aprovado');
+  const fat   = orcs.reduce((a,o)=>a+o.venda,0);
+  const custo = orcs.reduce((a,o)=>a+o.custoTotal,0);
+  const lucro = fat-custo;
+  const margem= fat>0?(lucro/fat*100):0;
+
+  // Ranking clientes
+  const porCliente = {};
+  orcs.forEach(o=>{
+    if(!porCliente[o.cliente]) porCliente[o.cliente]={venda:0,lucro:0,custo:0,n:0};
+    porCliente[o.cliente].venda+=o.venda;
+    porCliente[o.cliente].lucro+=o.lucro;
+    porCliente[o.cliente].custo+=o.custoTotal;
+    porCliente[o.cliente].n++;
+  });
+  const ranking = Object.entries(porCliente).sort((a,b)=>b[1].lucro-a[1].lucro);
+
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8">
+  <title>Relatório ${nomes[mes]} — MTPRO</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,sans-serif;color:#1a1a1a;padding:40px;font-size:13px}
+    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;padding-bottom:20px;border-bottom:3px solid #e8520a}
+    .logo{font-size:26px;font-weight:900;color:#1a2332}.logo span{color:#e8520a}
+    .titulo{font-size:13px;color:#666;margin-top:4px}
+    .data{font-size:12px;color:#999;text-align:right}
+    .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+    .kpi{background:#f8f7f4;border-radius:10px;padding:16px;border-left:4px solid #e8520a}
+    .kpi-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+    .kpi-val{font-size:22px;font-weight:800;color:#1a1a1a}
+    .kpi-val.green{color:#0a8a4a}.kpi-val.amber{color:#e8520a}
+    h2{font-size:14px;font-weight:700;color:#1a2332;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid #eee;padding-bottom:8px}
+    table{width:100%;border-collapse:collapse;margin-bottom:28px}
+    th{text-align:left;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.06em;padding:8px 12px;border-bottom:2px solid #eee}
+    td{padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:13px}
+    tr:last-child td{border-bottom:none}
+    .val{font-weight:700}.green{color:#0a8a4a}.amber{color:#e8520a}.red{color:#cc2222}
+    .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+    .badge-green{background:#e6f7ef;color:#0a8a4a}
+    .footer{margin-top:40px;padding-top:16px;border-top:1px solid #eee;font-size:11px;color:#999;text-align:center}
+    .rank-bar{height:4px;background:#eee;border-radius:2px;margin-top:4px;overflow:hidden}
+    .rank-fill{height:100%;border-radius:2px;background:#0a8a4a}
+    @media print{body{padding:20px}.no-print{display:none}}
+  </style>
+  </head><body>
+  <div class="header">
+    <div>
+      <div class="logo">MT<span style="color:var(--accent)">PRO</span></div>
+      <div class="titulo">Relatório interno de resultados — ${nomes[mes]} 2026</div>
+    </div>
+    <div class="data">Gerado em ${new Date().toLocaleDateString('pt-BR')}<br><span style="color:#e8520a;font-weight:700">USO INTERNO</span></div>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-label">Faturamento</div><div class="kpi-val amber">${fmt(fat)}</div><div style="font-size:11px;color:#888;margin-top:4px">${orcs.length} orçamentos aprovados</div></div>
+    <div class="kpi"><div class="kpi-label">Custo total</div><div class="kpi-val">${fmt(custo)}</div><div style="font-size:11px;color:#888;margin-top:4px">Materiais + mão de obra</div></div>
+    <div class="kpi"><div class="kpi-label">Lucro líquido</div><div class="kpi-val green">${fmt(lucro)}</div><div style="font-size:11px;color:#888;margin-top:4px">Margem ${margem.toFixed(1)}%</div></div>
+  </div>
+
+  <h2>Lucro por cliente</h2>
+  <table>
+    <thead><tr><th>#</th><th>Cliente</th><th>Orçamentos</th><th>Faturado</th><th>Custo</th><th>Lucro</th><th>Margem</th></tr></thead>
+    <tbody>
+      ${ranking.map(([nome,d],i)=>{
+        const mg = d.venda>0?(d.lucro/d.venda*100):0;
+        const maxL = ranking[0]?.[1].lucro||1;
+        return `<tr>
+          <td style="color:#999;font-weight:700">${i+1}</td>
+          <td><strong>${nome}</strong><div class="rank-bar"><div class="rank-fill" style="width:${Math.max(4,d.lucro/maxL*100)}%"></div></div></td>
+          <td>${d.n}</td>
+          <td class="val amber">${fmt(d.venda)}</td>
+          <td class="val">${fmt(d.custo)}</td>
+          <td class="val ${d.lucro>=0?'green':'red'}">${fmt(d.lucro)}</td>
+          <td class="val">${mg.toFixed(1)}%</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>
+
+  <h2>Orçamentos do mês</h2>
+  <table>
+    <thead><tr><th>Nº</th><th>Cliente</th><th>Serviço</th><th>Custo</th><th>Venda</th><th>Lucro</th><th>Margem</th></tr></thead>
+    <tbody>
+      ${[...orcs].reverse().map(o=>{
+        const mg = o.venda>0?(o.lucro/o.venda*100):0;
+        return `<tr>
+          <td style="color:#999">${o.numero||'-'}</td>
+          <td>${o.cliente}</td>
+          <td style="color:#666">${o.desc||'-'}</td>
+          <td class="val">${fmt(o.custoTotal)}</td>
+          <td class="val amber">${fmt(o.venda)}</td>
+          <td class="val ${o.lucro>=0?'green':'red'}">${fmt(o.lucro)}</td>
+          <td>${mg.toFixed(1)}%</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>
+
+  <div class="footer">MTPRO — Documento de uso interno — Gerado automaticamente</div>
+  <script>window.onload=()=>window.print()<\/script>
+  </body></html>`;
+
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+};
+
+// ── CLIENTES (lê do CRM existente) ──
+async function carregarClientes() {
+  // Coleção correta do CRM: 'clientes' com campo 'nome'
+  const colecoes = ['clientes','pedidos','customers'];
+  let encontrou = false;
+  for(const col of colecoes) {
+    try {
+      const snap = await getDocs(collection(db,col));
+      if(!snap.empty) {
+        window._clientes = snap.docs.map(d=>({id:d.id,...d.data()}));
+        encontrou = true;
+        break;
+      }
+    } catch(e){}
+  }
+  // Popula select — campo 'nome'
+  const sel = document.getElementById('sel-cliente');
+  if(window._clientes.length>0) {
+    // Ordena por nome alfabeticamente
+    const sorted = [...window._clientes].sort((a,b)=>{
+      const na = (a.nome||a.clienteNome||a.name||a.empresa||'').toLowerCase();
+      const nb = (b.nome||b.clienteNome||b.name||b.empresa||'').toLowerCase();
+      return na.localeCompare(nb,'pt-BR');
+    });
+    sorted.forEach(c=>{
+      const nome = c.nome||c.clienteNome||c.name||c.empresa||'Cliente '+c.id;
+      if(!nome.trim()) return; // Ignora registros sem nome
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = nome;
+      sel.appendChild(opt);
+    });
+  } else {
+    // Permite digitar manualmente se não encontrar clientes
+    sel.outerHTML = '<input class="field" id="sel-cliente" placeholder="Nome do cliente...">';
+  }
+}
+
+// ── ORÇAMENTOS ──
+async function carregarOrcamentos() {
+  const snap = await getDocs(collection(db,'mt_orcamentos'));
+  window._orcamentos = snap.docs.map(d=>({id:d.id,...d.data()}));
+}
+
+function atualizarNumeroOrcamento() {
+  const num = window._orcamentos.length + 1;
+  document.getElementById('orc-num').value = '#'+String(num).padStart(3,'0');
+}
+
+// ── ITENS ──
+function renderItens() {
+  const lista = document.getElementById('itens-lista');
+  const items = Object.values(window._itensSelecionados);
+  if(!items.length) {
+    lista.innerHTML = '<p style="font-size:13px;color:var(--muted);padding:8px 0">Selecione materiais ao lado →</p>';
+    document.getElementById('total-block').style.display='none';
+    return;
+  }
+  lista.innerHTML = items.map(it=>`
+    <div class="item-linha">
+      <div class="item-nome">${it.nome}</div>
+      <div class="item-unit">${it.unit}</div>
+      <input class="item-qty" type="number" min="0.01" step="0.01" value="${it.qty}"
+        onchange="updateQty('${it.id}',this.value)">
+      <div class="item-custo-unit">R$${it.custo.toLocaleString('pt-BR',{minimumFractionDigits:2})}/${it.unit}</div>
+      <div class="item-total">R$ ${(it.custo*it.qty).toLocaleString('pt-BR',{minimumFractionDigits:2})}</div>
+      <span class="item-del" onclick="removerItem('${it.id}')">×</span>
+    </div>
+  `).join('');
+  recalcular();
+}
+
+window.updateQty = function(id,val) {
+  if(window._itensSelecionados[id]) {
+    window._itensSelecionados[id].qty = Math.max(0.01,parseFloat(val)||0.01);
+    renderItens();
+  }
+};
+
+window.removerItem = function(id) {
+  delete window._itensSelecionados[id];
+  renderCatalogo();
+  renderItens();
+};
+
+window.recalcular = function() {
+  const items = Object.values(window._itensSelecionados);
+  if(!items.length) return;
+  const margem = parseInt(document.getElementById('margem-slider').value)||30;
+  const moPct  = parseFloat(document.getElementById('mo-pct').value)||0;
+  const pagNovo = document.getElementById('orc-pagamento')?.value||'dinheiro';
+  const isCardNovo = pagNovo==='cartao_debito'||pagNovo==='cartao_credito';
+  const taxaNovo = isCardNovo?(parseFloat(document.getElementById('orc-taxa-cartao')?.value)||0):0;
+  const subMat = items.reduce((a,i)=>a+i.custo*i.qty,0);
+  // Garante divisor mínimo de 0.10 (máx 90% entre margem+MO)
+  const soma = margem/100 + moPct/100;
+  const divisor = Math.max(0.10, 1 - soma);
+  const vendaBase = subMat / divisor;
+  const taxaVal = Math.round(vendaBase*taxaNovo/100*100)/100;
+  const venda = vendaBase + taxaVal;
+  const moVal = vendaBase*moPct/100;
+  const custoTotal = subMat + moVal + taxaVal;
+  const lucro = venda - custoTotal;
+  const lucroP = venda>0?(lucro/venda*100):0;
+
+  document.getElementById('total-block').style.display='block';
+  document.getElementById('sub-mat').textContent = fmt(subMat);
+  document.getElementById('sub-mo').textContent = fmt(moVal);
+  document.getElementById('sub-margem').textContent = fmt(lucro);
+  document.getElementById('margem-pct-label').textContent = margem;
+  document.getElementById('total-venda').textContent = fmt(venda);
+  document.getElementById('custo-total-display').textContent = fmt(custoTotal);
+  document.getElementById('lucro-display').textContent = fmt(lucro);
+  document.getElementById('mo-val-display').textContent = fmt(moVal);
+  document.getElementById('lucro-pct-label').textContent = lucroP.toFixed(1)+'%';
+  document.getElementById('lucro-bar-fill').style.width = Math.min(100,lucroP)+'%';
+  document.getElementById('lucro-bar-fill').style.background = lucroP>20?'var(--green)':lucroP>10?'var(--accent)':'var(--red)';
+};
+
+window.validarMoPct = function(el) {
+  const moPct  = parseFloat(el.value)||0;
+  const margem = parseInt(document.getElementById('margem-slider').value)||30;
+  if(moPct + margem >= 90) {
+    const maxMo = Math.max(0, 89 - margem);
+    el.value = maxMo;
+    showToast('Mão de obra + Margem não pode ultrapassar 90%!');
+  }
+  recalcular();
+};
+
+window.updateMargem = function(v) {
+  const margem = parseInt(v)||30;
+  const moPct  = parseFloat(document.getElementById('mo-pct').value)||0;
+  const soma   = margem + moPct;
+  // Limite: margem + MO não pode ultrapassar 90%
+  if(soma >= 90) {
+    const maxMargem = 90 - moPct;
+    document.getElementById('margem-slider').value = maxMargem;
+    document.getElementById('margem-display').textContent = maxMargem+'%';
+    showToast('Margem + Mão de obra não pode ultrapassar 90%!');
+    recalcular();
+    return;
+  }
+  document.getElementById('margem-display').textContent = margem+'%';
+  recalcular();
+};
+
+// ── SALVAR ──
+window.salvarOrcamento = async function() {
+  const items = Object.values(window._itensSelecionados);
+  if(!items.length){showToast('Adicione pelo menos um material!');return;}
+  const clienteEl = document.getElementById('sel-cliente');
+  const cliente = clienteEl.tagName==='SELECT'
+    ? clienteEl.options[clienteEl.selectedIndex]?.text||''
+    : clienteEl.value;
+  if(!cliente||cliente==='Selecione o cliente...'){showToast('Selecione o cliente!');return;}
+  const desc = document.getElementById('orc-desc').value||'Sem descrição';
+  const margem = parseInt(document.getElementById('margem-slider').value)||30;
+  const moPct = parseFloat(document.getElementById('mo-pct').value)||0;
+  const subMat = items.reduce((a,i)=>a+i.custo*i.qty,0);
+  const divisor = 1-margem/100-moPct/100;
+  const venda = divisor>0?subMat/divisor:subMat*(1+margem/100);
+  const moVal = venda*moPct/100;
+  const custoTotal = subMat+moVal;
+  const lucro = venda-custoTotal;
+  const pagamento = document.getElementById('orc-pagamento')?.value||'dinheiro';
+  const isCardS = pagamento==='cartao_debito'||pagamento==='cartao_credito';
+  const taxaCartao = isCardS?(parseFloat(document.getElementById('orc-taxa-cartao')?.value)||0):0;
+  const agora = new Date().toISOString();
+  const data = {
+    numero: document.getElementById('orc-num').value,
+    cliente, desc, itens: items,
+    subMat, moVal, moPct, margemPct:margem,
+    custoTotal, venda, lucro,
+    pagamento, taxaCartao,
+    status:'Aguardando',
+    criadoEm: agora,
+    alteradoEm: null, alteradoPor: null,
+    historico: [{ data: agora, usuario: _usuarioLogado?.nome||'Sistema', acao: 'Criado' }],
+    mes: new Date().getMonth()+1
+  };
+  await addDoc(collection(db,'mt_orcamentos'),data);
+  window._orcamentos.push({id:'new_'+Date.now(),...data});
+  showToast('Orçamento salvo no Firebase!');
+  limparOrcamento();
+  renderListaOrcamentos();
+  renderRelatorio();
+  atualizarNumeroOrcamento();
+};
+
+window.limparOrcamento = function() {
+  window._itensSelecionados={};
+  renderCatalogo();
+  renderItens();
+  document.getElementById('orc-desc').value='';
+  document.getElementById('margem-slider').value=30;
+  document.getElementById('margem-display').textContent='30%';
+  document.getElementById('mo-pct').value=25;
+  document.getElementById('total-block').style.display='none';
+};
+
+// ── LISTA ──
+function renderDashboard() {
+  const el = document.getElementById('dashboard-orc');
+  if(!el) return;
+  const orcs = window._orcamentos;
+  if(!orcs.length) { el.innerHTML=''; return; }
+
+  const total     = orcs.length;
+  const aprovados = orcs.filter(o=>o.status==='Aprovado');
+  const aguardando= orcs.filter(o=>o.status==='Aguardando');
+  const recusados = orcs.filter(o=>o.status==='Recusado');
+
+  const fatAprov  = aprovados.reduce((a,o)=>a+(o.venda||0),0);
+  const fatTotal  = orcs.reduce((a,o)=>a+(o.venda||0),0);
+  const fatAguard = aguardando.reduce((a,o)=>a+(o.venda||0),0);
+  const fatRecus  = recusados.reduce((a,o)=>a+(o.venda||0),0);
+  const lucroAprov= aprovados.reduce((a,o)=>a+(o.lucro||0),0);
+  const txConv    = total>0?Math.round(aprovados.length/total*100):0;
+  const txPerda   = total>0?Math.round(recusados.length/total*100):0;
+  const margMedia  = aprovados.length>0?Math.round(aprovados.reduce((a,o)=>a+(o.margemPct||0),0)/aprovados.length):0;
+
+  // Top 3 clientes por venda aprovada
+  const porCliente = {};
+  aprovados.forEach(o=>{
+    porCliente[o.cliente] = (porCliente[o.cliente]||0)+(o.venda||0);
+  });
+  const top3 = Object.entries(porCliente).sort((a,b)=>b[1]-a[1]).slice(0,3);
+
+  // Últimos 30 dias vs anteriores
+  const hoje = new Date();
+  const d30  = new Date(hoje - 30*24*60*60*1000);
+  const recentes = orcs.filter(o=>new Date(o.criadoEm)>=d30);
+  const antigos  = orcs.filter(o=>new Date(o.criadoEm)<d30);
+
+  el.innerHTML = `
+    <!-- KPIs principais -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px">
+      <div class="card" style="padding:16px;border-left:4px solid var(--accent)">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">Total orçamentos</div>
+        <div style="font-family:Inter,sans-serif;font-size:28px;font-weight:800;color:var(--text)">${total}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">${recentes.length} nos últimos 30 dias</div>
+      </div>
+      <div class="card" style="padding:16px;border-left:4px solid var(--green)">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">Fechados</div>
+        <div style="font-family:Inter,sans-serif;font-size:28px;font-weight:800;color:var(--green)">${aprovados.length}</div>
+        <div style="font-size:12px;color:var(--green);margin-top:4px;font-weight:600">Taxa ${txConv}% de conversão</div>
+      </div>
+      <div class="card" style="padding:16px;border-left:4px solid var(--accent)">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">Em negociação</div>
+        <div style="font-family:Inter,sans-serif;font-size:28px;font-weight:800;color:var(--accent)">${aguardando.length}</div>
+        <div style="font-size:12px;color:var(--accent);margin-top:4px;font-weight:600">${fmt(fatAguard)} em aberto</div>
+      </div>
+      <div class="card" style="padding:16px;border-left:4px solid var(--red)">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">Não fechados</div>
+        <div style="font-family:Inter,sans-serif;font-size:28px;font-weight:800;color:var(--red)">${recusados.length}</div>
+        <div style="font-size:12px;color:var(--red);margin-top:4px;font-weight:600">Taxa ${txPerda}% de perda</div>
+      </div>
+    </div>
+
+    <!-- Financeiro + funil -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
+
+      <!-- Financeiro -->
+      <div class="card" style="padding:16px">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px">Financeiro geral</div>
+        <div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:3px"><span>Faturamento aprovado</span><span style="font-weight:700;color:var(--green)">${fmt(fatAprov)}</span></div>
+          <div style="height:3px;background:var(--bg4);border-radius:2px"><div style="height:100%;border-radius:2px;background:var(--green);width:${fatTotal>0?Math.round(fatAprov/fatTotal*100):0}%"></div></div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:3px"><span>Em negociação</span><span style="font-weight:700;color:var(--accent)">${fmt(fatAguard)}</span></div>
+          <div style="height:3px;background:var(--bg4);border-radius:2px"><div style="height:100%;border-radius:2px;background:var(--accent);width:${fatTotal>0?Math.round(fatAguard/fatTotal*100):0}%"></div></div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:3px"><span>Perdido</span><span style="font-weight:700;color:var(--red)">${fmt(fatRecus)}</span></div>
+          <div style="height:3px;background:var(--bg4);border-radius:2px"><div style="height:100%;border-radius:2px;background:var(--red);width:${fatTotal>0?Math.round(fatRecus/fatTotal*100):0}%"></div></div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:4px">
+          <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--muted)">Lucro aprovado</span><span style="font-family:Inter,sans-serif;font-weight:800;color:var(--green)">${fmt(lucroAprov)}</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:4px"><span style="color:var(--muted)">Margem média</span><span style="font-weight:700;color:var(--accent)">${margMedia}%</span></div>
+        </div>
+      </div>
+
+      <!-- Funil visual -->
+      <div class="card" style="padding:16px">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px">Funil de vendas</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="background:rgba(26,95,168,0.12);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px;font-weight:600;color:var(--blue)">Total gerado</span>
+            <span style="font-family:Inter,sans-serif;font-weight:800;color:var(--blue)">${total}</span>
+          </div>
+          <div style="background:rgba(232,82,10,0.1);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin:0 8px">
+            <span style="font-size:13px;font-weight:600;color:var(--accent)">Negociando</span>
+            <span style="font-family:Inter,sans-serif;font-weight:800;color:var(--accent)">${aguardando.length}</span>
+          </div>
+          <div style="background:rgba(62,207,142,0.12);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin:0 16px">
+            <span style="font-size:13px;font-weight:600;color:var(--green)">Fechados ✓</span>
+            <span style="font-family:Inter,sans-serif;font-weight:800;color:var(--green)">${aprovados.length}</span>
+          </div>
+          <div style="background:rgba(224,85,85,0.1);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin:0 24px">
+            <span style="font-size:13px;font-weight:600;color:var(--red)">Perdidos</span>
+            <span style="font-family:Inter,sans-serif;font-weight:800;color:var(--red)">${recusados.length}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top clientes -->
+      <div class="card" style="padding:16px">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:12px">Top clientes fechados</div>
+        ${top3.length ? top3.map(([nome,val],i)=>`
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+            <div style="width:22px;height:22px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0">${i+1}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${nome}</div>
+              <div style="height:3px;background:var(--bg4);border-radius:2px;margin-top:4px;overflow:hidden">
+                <div style="height:100%;border-radius:2px;background:var(--green);width:${top3[0][1]>0?Math.round(val/top3[0][1]*100):0}%"></div>
+              </div>
+            </div>
+            <div style="font-family:Inter,sans-serif;font-size:13px;font-weight:700;color:var(--green);white-space:nowrap">${fmt(val)}</div>
+          </div>
+        `).join('') : '<div style="font-size:13px;color:var(--muted);padding:12px 0">Nenhum aprovado ainda.</div>'}
+        ${aprovados.length>0?`
+          <div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);display:flex;justify-content:space-between;font-size:12px">
+            <span style="color:var(--muted)">Ticket médio</span>
+            <span style="font-weight:700;color:var(--text)">${fmt(fatAprov/aprovados.length)}</span>
+          </div>
+        `:''}
+      </div>
+    </div>
+  `;
+}
+
+function renderListaOrcamentos() {
+  renderDashboard();
+  const tb = document.getElementById('lista-tbody');
+  const orcs = [...window._orcamentos].reverse();
+  if(!orcs.length){tb.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:30px">Nenhum orçamento ainda.</td></tr>';return;}
+  tb.innerHTML = orcs.map(o=>`
+    <tr onclick="abrirModal('${o.id}')">
+      <td><span class="td-num">${o.numero||'-'}</span></td>
+      <td>${o.cliente}</td>
+      <td style="color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.desc}</td>
+      <td class="td-val">${fmt(o.custoTotal)}</td>
+      <td class="td-val td-amber">${fmt(o.venda)}</td>
+      <td class="td-val ${o.lucro>=0?'td-green':'td-red'}">${fmt(o.lucro)}</td>
+      <td class="td-val">${o.margemPct}%</td>
+      <td style="color:var(--muted)">${fmtData(o.criadoEm)}</td>
+      <td><span class="badge ${badgeClass(o.status)}">${o.status}</span></td>
+    </tr>
+  `).join('');
+  // badges resumo
+  const doc2 = document.getElementById('badges-status');
+  const apr = orcs.filter(o=>o.status==='Aprovado').length;
+  const agu = orcs.filter(o=>o.status==='Aguardando').length;
+  doc2.innerHTML = `<span class="badge badge-green">${apr} aprovados</span><span class="badge badge-amber">${agu} aguardando</span>`;
+}
+
+window.filtrarOrcamentos = function() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const rows = document.querySelectorAll('#lista-tbody tr');
+  rows.forEach(r=>{ r.style.display=r.textContent.toLowerCase().includes(q)?'':'none'; });
+};
+
+// ── MODAL ──
+window.abrirModal = function(id) {
+  const o = window._orcamentos.find(x=>x.id===id);
+  if(!o) return;
+  window._modalOrcId = id;
+  document.getElementById('modal-title').textContent = `${o.numero} — ${o.cliente}`;
+  const itens = (o.itens||[]).map(i=>`
+    <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border);align-items:center">
+      <span style="font-weight:500">${i.nome} <span style="color:var(--muted);font-weight:400">${i.qty} ${i.unit}</span></span>
+      <span style="font-family:Inter,sans-serif;font-weight:700">${fmt(Math.round(i.custo*i.qty*100)/100)}</span>
+    </div>
+  `).join('');
+
+  const subMat    = Math.round((o.subMat||0)*100)/100;
+  const moVal     = Math.round((o.moVal||0)*100)/100;
+  const moPct     = o.moPct||25;
+  const taxaCard  = o.taxaCartao||0;
+  const custoTotal= Math.round((o.custoTotal||0)*100)/100;
+  const venda     = Math.round((o.venda||0)*100)/100;
+  const lucro     = Math.round((o.lucro||0)*100)/100;
+  const margemPct = o.margemPct||30;
+  const pagLabels = {'dinheiro':'Dinheiro/PIX','boleto':'Boleto','cartao_debito':'Cartão débito','cartao_credito':'Cartão crédito','cheque':'Cheque','transferencia':'Transferência'};
+  const pagLabel  = pagLabels[o.pagamento]||'—';
+  const hist      = (o.historico||[]).slice(-3).reverse();
+
+  document.getElementById('modal-body').innerHTML = `
+    <div style="margin-bottom:14px;color:var(--muted);font-size:13px">${o.desc||''}</div>
+    ${itens}
+
+    <!-- Discriminação de custos -->
+    <div style="margin-top:12px;background:var(--bg3);border-radius:8px;padding:12px;border:1px solid var(--border)">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Composição do custo</div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--muted)">Subtotal materiais</span>
+        <span style="font-weight:600">${fmt(subMat)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--muted)">Mão de obra (${moPct}% da venda)</span>
+        <span style="font-weight:600;color:var(--purple)">${fmt(moVal)}</span>
+      </div>
+      ${taxaCard?`<div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--muted)">Taxa ${pagLabel} (${taxaCard}%)</span>
+        <span style="font-weight:600;color:var(--red)">${fmt(Math.round(venda*taxaCard/100*100)/100)}</span>
+      </div>`:''}
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;font-weight:700">
+        <span>Custo total</span>
+        <span style="color:var(--accent)">${fmt(custoTotal)}</span>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div class="mbar"><div class="mbar-label">Venda</div><div class="mbar-val">${fmt(venda)}</div></div>
+      <div class="mbar"><div class="mbar-label">Lucro (${margemPct}% margem)</div><div class="mbar-val green">${fmt(lucro)}</div></div>
+      <div class="mbar"><div class="mbar-label">Pagamento</div><div class="mbar-val" style="font-size:12px;color:var(--blue)">${pagLabel}</div></div>
+      <div class="mbar"><div class="mbar-label">Criado em</div><div class="mbar-val" style="font-size:12px;color:var(--muted)">${fmtData(o.criadoEm)}</div></div>
+      <div class="mbar"><div class="mbar-label">Última edição</div><div class="mbar-val" style="font-size:12px;color:var(--muted)">${o.alteradoEm?fmtData(o.alteradoEm)+' — '+o.alteradoPor:'—'}</div></div>
+    </div>
+
+    ${hist.length?`<div style="margin-top:10px;padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px">Histórico</div>
+      ${hist.map(h=>`<div style="font-size:11px;color:var(--muted);padding:3px 0">${fmtData(h.data)} ${new Date(h.data).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})} — ${h.usuario} — ${h.acao}</div>`).join('')}
+    </div>`:''}
+
+    <!-- Campo mão de obra responsável -->
+    <div style="margin-top:12px;background:rgba(155,127,232,0.06);border:1px solid rgba(155,127,232,0.2);border-radius:8px;padding:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">Mão de obra — Responsável</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="mo-responsavel-input" class="field" placeholder="Nome do instalador / equipe responsável..."
+          value="${o.moResponsavel||''}"
+          style="flex:1;font-size:13px;padding:8px 12px;background:#fff">
+        <button onclick="salvarMoResponsavel('${id}')" style="
+          background:var(--purple);color:#fff;border:none;border-radius:8px;
+          padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer;
+          font-family:Inter,sans-serif;white-space:nowrap;transition:opacity .2s
+        " onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">Salvar</button>
+      </div>
+      ${o.moResponsavel?`<div style="font-size:11px;color:var(--muted);margin-top:6px">✓ Registrado: <strong style="color:var(--purple)">${o.moResponsavel}</strong></div>`:''}
+    </div>
+
+    <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+      <div style="font-size:12px;color:var(--muted)">Status: <span class="badge ${badgeClass(o.status)}">${o.status}</span></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-ghost" style="font-size:11px;padding:5px 12px" onclick="gerarPDFOrcamento('${id}')">📄 PDF</button>
+        <button class="btn-ghost" style="font-size:11px;padding:5px 12px" onclick="abrirEdicaoOrcamento('${id}')">✏️ Editar itens</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('modal-overlay').classList.add('open');
+};
+
+window.fecharModal = function(e) {
+  if(e.target===document.getElementById('modal-overlay'))
+    document.getElementById('modal-overlay').classList.remove('open');
+};
+
+window.salvarMoResponsavel = async function(id) {
+  const val = document.getElementById('mo-responsavel-input')?.value.trim();
+  if(!val) { showToast('Digite o nome do responsável!'); return; }
+  const o = window._orcamentos.find(x=>x.id===id);
+  if(!o) return;
+  try { await updateDoc(doc(db,'mt_orcamentos',id),{moResponsavel:val}); } catch(e){}
+  o.moResponsavel = val;
+  showToast('Responsável salvo: '+val);
+  // Atualiza o campo na tela sem fechar o modal
+  const conf = document.querySelector('#modal-overlay [style*="Registrado:"]');
+  if(conf) { conf.innerHTML = `✓ Registrado: <strong style="color:var(--purple)">${val}</strong>`; }
+  else {
+    const input = document.getElementById('mo-responsavel-input');
+    if(input) {
+      const div = document.createElement('div');
+      div.style.cssText = 'font-size:11px;color:var(--muted);margin-top:6px';
+      div.innerHTML = `✓ Registrado: <strong style="color:var(--purple)">${val}</strong>`;
+      input.parentElement.parentElement.appendChild(div);
+    }
+  }
+};
+
+window.atualizarStatus = async function(status) {
+  const id = window._modalOrcId;
+  if(!id) return;
+  const o = window._orcamentos.find(x=>x.id===id);
+  if(!o) return;
+  try {
+    await updateDoc(doc(db,'mt_orcamentos',id),{status});
+    o.status = status;
+  } catch(e){}
+  renderListaOrcamentos();
+  renderRelatorio();
+  document.getElementById('modal-overlay').classList.remove('open');
+  showToast('Status atualizado: '+status);
+};
+
+// ── RELATÓRIO ──
+window.renderRelatorio = function() {
+  const mes = parseInt(document.getElementById('sel-mes')?.value||3);
+  const orcs = window._orcamentos.filter(o=>o.mes===mes&&o.status==='Aprovado');
+  const fat = orcs.reduce((a,o)=>a+o.venda,0);
+  const custo = orcs.reduce((a,o)=>a+o.custoTotal,0);
+  const lucro = fat-custo;
+  const margMedia = fat>0?(lucro/fat*100):0;
+  document.getElementById('rel-fat').textContent = fmt(fat);
+  document.getElementById('rel-fat-orc').textContent = orcs.length+' orçamentos aprovados';
+  document.getElementById('rel-custo').textContent = fmt(custo);
+  document.getElementById('rel-lucro').textContent = fmt(lucro);
+  document.getElementById('rel-margem-media').textContent = 'Margem '+margMedia.toFixed(1)+'%';
+
+  // Ranking clientes
+  const porCliente = {};
+  orcs.forEach(o=>{
+    if(!porCliente[o.cliente]) porCliente[o.cliente]={venda:0,lucro:0,custo:0,n:0};
+    porCliente[o.cliente].venda+=o.venda;
+    porCliente[o.cliente].lucro+=o.lucro;
+    porCliente[o.cliente].custo+=o.custoTotal;
+    porCliente[o.cliente].n++;
+  });
+  const ranking = Object.entries(porCliente).sort((a,b)=>b[1].lucro-a[1].lucro);
+  const maxLucro = ranking[0]?.[1].lucro||1;
+  document.getElementById('ranking-clientes').innerHTML = ranking.length
+    ? ranking.map(([nome,d],i)=>`
+      <div class="cliente-row">
+        <div class="cliente-rank">${i+1}</div>
+        <div class="cliente-info" style="flex:1">
+          <div class="cliente-nome">${nome}</div>
+          <div class="cliente-sub">${d.n} orç. · custo ${fmt(d.custo)}</div>
+          <div class="progress-mini"><div class="progress-fill" style="width:${Math.max(4,d.lucro/maxLucro*100)}%;background:${d.lucro>0?'var(--green)':'var(--red)'}"></div></div>
+        </div>
+        <div class="cliente-lucro ${d.lucro>=0?'td-green':'td-red'}">${fmt(d.lucro)}</div>
+      </div>
+    `).join('')
+    : '<p style="color:var(--muted);font-size:13px;padding:12px 0">Nenhum orçamento aprovado neste mês.</p>';
+
+  // Tabela do mês
+  document.getElementById('rel-tabela').innerHTML = orcs.length
+    ? [...orcs].reverse().map(o=>`
+      <tr>
+        <td>${o.cliente}</td>
+        <td class="td-val td-amber">${fmt(o.venda)}</td>
+        <td class="td-val ${o.lucro>=0?'td-green':'td-red'}">${fmt(o.lucro)}</td>
+        <td><span class="badge ${badgeClass(o.status)}">${o.status}</span></td>
+      </tr>
+    `).join('')
+    : '<tr><td colspan="4" style="color:var(--muted);padding:20px;text-align:center">Nenhum aprovado.</td></tr>';
+};
+
+// ── EDITAR ORÇAMENTO ──
+let _editItens = [];
+
+window.abrirEdicaoOrcamento = function(id) {
+  const o = window._orcamentos.find(x=>x.id===id);
+  if(!o) return;
+  window._modalOrcId = id;
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.getElementById('edit-orc-title').textContent = `Editar ${o.numero} — ${o.cliente}`;
+  _editItens = JSON.parse(JSON.stringify(o.itens||[]));
+  // Carrega margem e pagamento existentes
+  document.getElementById('edit-margem').value = o.margemPct||30;
+  document.getElementById('edit-margem-preview').textContent = (o.margemPct||30)+'%';
+  document.getElementById('edit-mo-pct').value = o.moPct||25;
+  document.getElementById('edit-mo-preview').textContent = (o.moPct||25)+'%';
+  const pag = document.getElementById('edit-pagamento');
+  pag.value = o.pagamento||'dinheiro';
+  document.getElementById('edit-taxa-cartao').value = o.taxaCartao||2.5;
+  toggleCartaoTaxa();
+  const sel = document.getElementById('edit-add-mat');
+  sel.innerHTML = window._materiais.map(m=>`<option value="${m.id}">${m.nome} (${m.unit}) — R$${m.custo}</option>`).join('');
+  sel.onchange = function() {
+    const m = window._materiais.find(x=>x.id===sel.value);
+    if(m) document.getElementById('edit-add-custo').value = m.custo;
+  };
+  sel.dispatchEvent(new Event('change'));
+  renderEditItens();
+  document.getElementById('modal-editar-orc').classList.add('open');
+};
+
+window.toggleCartaoTaxaNovo = function() {
+  const pag = document.getElementById('orc-pagamento').value;
+  const isCard = pag==='cartao_debito'||pag==='cartao_credito';
+  document.getElementById('taxa-novo-wrap').style.display = isCard?'block':'none';
+  recalcular();
+};
+
+window.toggleCartaoTaxa = function() {
+  const pag = document.getElementById('edit-pagamento').value;
+  const isCard = pag==='cartao_debito'||pag==='cartao_credito';
+  document.getElementById('cartao-taxa-wrap').style.display = isCard?'block':'none';
+  document.getElementById('cartao-taxa-vazio').style.display = isCard?'none':'block';
+  atualizarTotaisEdit();
+};
+
+window.toggleNovaCategoria = function(sel) {
+  const input = document.getElementById('edit-mat-cat-nova');
+  if(sel.value==='__nova__') { input.style.display='block'; input.focus(); }
+  else input.style.display='none';
+};
+
+function renderEditItens() {
+  const el = document.getElementById('edit-orc-itens');
+  el.innerHTML = _editItens.map((it,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:${i%2===0?'var(--bg3)':'transparent'};margin-bottom:4px" data-idx="${i}">
+      <div style="flex:1;font-size:13px;font-weight:500">${it.nome}</div>
+      <div style="font-size:11px;color:var(--muted);width:28px;text-align:center">${it.unit}</div>
+      <input type="number" value="${it.qty}" min="0.01" step="0.01" data-edit-qty="${i}"
+        style="width:64px;background:#fff;border:1px solid var(--border2);border-radius:6px;padding:5px 8px;font-size:13px;text-align:center;outline:none;font-family:Inter,sans-serif">
+      <div style="font-size:12px;color:var(--muted);width:58px;text-align:right">R$${it.custo}/${it.unit}</div>
+      <div style="font-family:Inter,sans-serif;font-size:13px;font-weight:700;width:80px;text-align:right" data-total="${i}">${fmt(Math.round(it.custo*it.qty*100)/100)}</div>
+      <span data-del-idx="${i}" style="color:var(--red);font-size:22px;cursor:pointer;padding:0 6px;line-height:1;font-weight:300">×</span>
+    </div>
+  `).join('');
+
+  // Event delegation — evita problemas com CSP/inline handlers
+  el.querySelectorAll('[data-edit-qty]').forEach(input => {
+    input.addEventListener('input', function() {
+      const idx = parseInt(this.getAttribute('data-edit-qty'));
+      const val = Math.max(0.01, parseFloat(this.value)||0.01);
+      _editItens[idx].qty = val;
+      const totalEl = el.querySelector(`[data-total="${idx}"]`);
+      if(totalEl) totalEl.textContent = fmt(Math.round(_editItens[idx].custo*val*100)/100);
+      atualizarTotaisEdit();
+    });
+  });
+
+  el.querySelectorAll('[data-del-idx]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const idx = parseInt(this.getAttribute('data-del-idx'));
+      _editItens.splice(idx, 1);
+      renderEditItens();
+    });
+  });
+
+  atualizarTotaisEdit();
+}
+
+window.validarCamposEdit = function() {
+  const margem = parseFloat(document.getElementById('edit-margem')?.value)||0;
+  const moPct  = parseFloat(document.getElementById('edit-mo-pct')?.value)||0;
+  const aviso  = document.getElementById('edit-limite-aviso');
+  // Atualiza previews
+  document.getElementById('edit-margem-preview').textContent = margem+'%';
+  document.getElementById('edit-mo-preview').textContent = moPct+'%';
+  if(margem + moPct >= 90) {
+    if(aviso) aviso.style.display='block';
+    // Ajusta automaticamente
+    if(parseFloat(document.getElementById('edit-margem').value) + moPct >= 90) {
+      document.getElementById('edit-margem').value = Math.max(1, 89 - moPct);
+      document.getElementById('edit-margem-preview').textContent = document.getElementById('edit-margem').value+'%';
+    }
+  } else {
+    if(aviso) aviso.style.display='none';
+  }
+};
+
+function atualizarTotaisEdit() {
+  const o = window._orcamentos.find(x=>x.id===window._modalOrcId);
+  if(!o) return;
+  const margem   = parseFloat(document.getElementById('edit-margem')?.value)||30;
+  const moPct    = parseFloat(document.getElementById('edit-mo-pct')?.value)||25;
+  const pag      = document.getElementById('edit-pagamento')?.value||'dinheiro';
+  const isCard   = pag==='cartao_debito'||pag==='cartao_credito';
+  const taxaCard = isCard?(parseFloat(document.getElementById('edit-taxa-cartao')?.value)||0):0;
+  const subMat   = _editItens.reduce((a,i)=>a+Math.round(i.custo*i.qty*100)/100, 0);
+  const divisor  = Math.max(0.10, 1-margem/100-moPct/100);
+  const vendaBase= subMat/divisor;
+  const taxaVal  = Math.round(vendaBase*taxaCard/100*100)/100;
+  const venda    = Math.round((vendaBase+taxaVal)*100)/100;
+  const moVal    = Math.round(vendaBase*moPct/100*100)/100;
+  const custoT   = Math.round((subMat+moVal+taxaVal)*100)/100;
+  const lucro    = Math.round((venda-custoT)*100)/100;
+  const pagLabel = {'dinheiro':'Dinheiro/PIX','boleto':'Boleto','cartao_debito':'Débito','cartao_credito':'Crédito','cheque':'Cheque','transferencia':'Transferência'}[pag]||pag;
+
+  // Linha de MO no resumo de itens
+  const moLine = document.getElementById('edit-mo-line');
+  if(moLine) {
+    moLine.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:rgba(155,127,232,0.08);margin-bottom:4px;border:1px solid rgba(155,127,232,0.2)">
+        <div style="flex:1;font-size:13px;font-weight:500;color:var(--purple)">Mão de obra</div>
+        <div style="font-size:11px;color:var(--muted);width:28px;text-align:center">%</div>
+        <div style="width:64px;text-align:center;font-size:13px;font-weight:600;color:var(--purple)">${moPct}%</div>
+        <div style="font-size:12px;color:var(--muted);width:58px;text-align:right">da venda</div>
+        <div style="font-family:Inter,sans-serif;font-size:13px;font-weight:700;width:80px;text-align:right;color:var(--purple)">${fmt(moVal)}</div>
+        <span style="width:22px"></span>
+      </div>`;
+  }
+
+  document.getElementById('edit-orc-totais').innerHTML = `
+    <div class="mbar"><div class="mbar-label">Materiais</div><div class="mbar-val">${fmt(subMat)}</div></div>
+    <div class="mbar"><div class="mbar-label">Mão de obra</div><div class="mbar-val" style="color:var(--purple)">${fmt(moVal)}</div></div>
+    <div class="mbar"><div class="mbar-label">Custo total</div><div class="mbar-val amber">${fmt(custoT)}</div></div>
+    <div class="mbar"><div class="mbar-label">Venda (${margem}% margem)</div><div class="mbar-val">${fmt(venda)}</div></div>
+    <div class="mbar"><div class="mbar-label">Lucro estimado</div><div class="mbar-val green">${fmt(lucro)}</div></div>
+    ${isCard?`<div class="mbar"><div class="mbar-label">Taxa ${pagLabel} (${taxaCard}%)</div><div class="mbar-val" style="color:var(--red)">${fmt(taxaVal)}</div></div>`:''}
+    <div class="mbar" style="grid-column:span ${isCard?1:2}"><div class="mbar-label">Pagamento</div><div class="mbar-val" style="color:var(--blue)">${pagLabel}</div></div>
+  `;
+}
+
+window.editOrcAddItem = function() {
+  const sel   = document.getElementById('edit-add-mat');
+  const m     = window._materiais.find(x=>x.id===sel.value);
+  if(!m) return;
+  const qty   = Math.max(0.01, parseFloat(document.getElementById('edit-add-qty').value)||1);
+  const custo = parseFloat(document.getElementById('edit-add-custo').value)||m.custo;
+  _editItens.push({id:m.id,nome:m.nome,unit:m.unit,custo,qty});
+  document.getElementById('edit-add-qty').value = 1;
+  renderEditItens();
+};
+
+window.salvarEdicaoOrcamento = async function() {
+  const id = window._modalOrcId;
+  const o  = window._orcamentos.find(x=>x.id===id);
+  if(!o||!_editItens.length) { showToast('Adicione pelo menos 1 item!'); return; }
+  const margem   = parseFloat(document.getElementById('edit-margem').value)||30;
+  const moPct    = parseFloat(document.getElementById('edit-mo-pct').value)||25;
+  const pag      = document.getElementById('edit-pagamento').value||'dinheiro';
+  const isCard   = pag==='cartao_debito'||pag==='cartao_credito';
+  const taxaCard = isCard?(parseFloat(document.getElementById('edit-taxa-cartao').value)||0):0;
+  const subMat   = _editItens.reduce((a,i)=>a+Math.round(i.custo*i.qty*100)/100, 0);
+  const divisor  = 1-margem/100-moPct/100;
+  const vendaBase= divisor>0?subMat/divisor:subMat*(1+margem/100);
+  const taxaVal  = Math.round(vendaBase*taxaCard/100*100)/100;
+  const venda    = Math.round((vendaBase+taxaVal)*100)/100;
+  const moVal    = Math.round(vendaBase*moPct/100*100)/100;
+  const custoTotal = Math.round((subMat+moVal+taxaVal)*100)/100;
+  const lucro    = Math.round((venda-custoTotal)*100)/100;
+  // Histórico de alterações
+  const agora = new Date().toISOString();
+  const hist  = o.historico||[];
+  hist.push({ data: agora, usuario: _usuarioLogado?.nome||'Sistema', acao: 'Editado' });
+  const updates = {
+    itens:_editItens, subMat, moVal, custoTotal, venda, lucro,
+    margemPct: margem, pagamento: pag, taxaCartao: taxaCard,
+    alteradoEm: agora, alteradoPor: _usuarioLogado?.nome||'Sistema',
+    historico: hist
+  };
+  try { await updateDoc(doc(db,'mt_orcamentos',id),updates); } catch(e){}
+  Object.assign(o,updates);
+  document.getElementById('modal-editar-orc').classList.remove('open');
+  renderListaOrcamentos();
+  renderRelatorio();
+  showToast('Orçamento atualizado!');
+};
+
+// ── GESTÃO DE USUÁRIOS ──
+const TODAS_PERMISSOES = [
+  { key:'criar_orc',       label:'Criar orçamento' },
+  { key:'editar_orc',      label:'Editar orçamento' },
+  { key:'aprovar_orc',     label:'Aprovar orçamento' },
+  { key:'remover_orc',     label:'Remover orçamento' },
+  { key:'ver_relatorio',   label:'Ver relatório' },
+  { key:'gerar_pdf',       label:'Gerar PDF' },
+  { key:'gerenciar_mat',   label:'Gerenciar materiais' },
+  { key:'gerenciar_users', label:'Gerenciar usuários' },
+];
+const PERMS_ADMIN  = Object.fromEntries(['criar_orc','editar_orc','aprovar_orc','remover_orc','ver_relatorio','gerar_pdf','gerenciar_mat','gerenciar_users'].map(k=>[k,true]));
+const PERMS_PADRAO = { criar_orc:true, editar_orc:false, aprovar_orc:false, remover_orc:false, ver_relatorio:false, gerar_pdf:false, gerenciar_mat:false, gerenciar_users:false };
+
+function temPermissao(key) {
+  if(!_usuarioLogado) return false;
+  if(_usuarioLogado.perfil==='admin') return true;
+  return !!(_usuarioLogado.permissoes?.[key]);
+}
+
+window.toggleFormUsuario = function() {
+  document.getElementById('form-novo-usuario').classList.toggle('open');
+};
+
+window.criarUsuario = async function() {
+  if(!temPermissao('gerenciar_users')) { showToast('Sem permissão!'); return; }
+  const nome    = document.getElementById('nu-nome').value.trim();
+  const usuario = document.getElementById('nu-usuario').value.trim().toLowerCase();
+  const senha   = document.getElementById('nu-senha').value.trim();
+  if(!nome||!usuario||!senha) { showToast('Preencha todos os campos!'); return; }
+  const snap = await getDocs(collection(db,'mt_usuarios'));
+  if(snap.docs.find(d=>d.data().usuario===usuario)) { showToast('Usuário "'+usuario+'" já existe!'); return; }
+  await addDoc(collection(db,'mt_usuarios'),{nome,usuario,senha,perfil:'equipe',permissoes:PERMS_PADRAO});
+  document.getElementById('nu-nome').value='';
+  document.getElementById('nu-usuario').value='';
+  document.getElementById('nu-senha').value='';
+  document.getElementById('form-novo-usuario').classList.remove('open');
+  await renderTabelaUsuarios();
+  showToast('Usuário "'+nome+'" criado!');
+};
+
+window.deletarUsuario = async function(id, usuario) {
+  if(usuario==='admin') { showToast('O admin não pode ser removido!'); return; }
+  if(!confirm('Remover acesso de "'+usuario+'"?')) return;
+  await deleteDoc(doc(db,'mt_usuarios',id));
+  await renderTabelaUsuarios();
+  showToast('Usuário removido.');
+};
+
+window.abrirEdicaoUsuario = function(u) {
+  document.getElementById('eu-id').value      = u.id;
+  document.getElementById('eu-nome').value    = u.nome;
+  document.getElementById('eu-usuario').value = u.usuario;
+  document.getElementById('eu-senha').value   = '';
+  const isAdm = u.perfil==='admin';
+  const perms = isAdm ? PERMS_ADMIN : (u.permissoes||PERMS_PADRAO);
+  document.getElementById('eu-perms-grid').innerHTML = TODAS_PERMISSOES.map(p=>`
+    <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);cursor:${isAdm?'default':'pointer'}">
+      <input type="checkbox" id="perm-${p.key}" ${perms[p.key]?'checked':''} ${isAdm?'disabled':''}
+        style="width:16px;height:16px;accent-color:var(--accent)">
+      <span style="font-size:13px;font-weight:500">${p.label}</span>
+    </label>
+  `).join('')+( isAdm?'<div style="grid-column:span 2;font-size:11px;color:var(--muted);padding:6px 4px">Admin sempre tem todas as permissões.</div>':'');
+  document.getElementById('modal-editar-usuario').classList.add('open');
+};
+
+window.salvarEdicaoUsuario = async function() {
+  const id      = document.getElementById('eu-id').value;
+  const nome    = document.getElementById('eu-nome').value.trim();
+  const usuario = document.getElementById('eu-usuario').value.trim().toLowerCase();
+  const senha   = document.getElementById('eu-senha').value.trim();
+  if(!nome||!usuario) { showToast('Nome e usuário são obrigatórios!'); return; }
+  const snap = await getDocs(collection(db,'mt_usuarios'));
+  const uDoc = snap.docs.find(d=>d.id===id);
+  if(!uDoc) return;
+  const isAdm = uDoc.data().perfil==='admin';
+  const permissoes = isAdm ? PERMS_ADMIN : Object.fromEntries(
+    TODAS_PERMISSOES.map(p=>[p.key, document.getElementById('perm-'+p.key)?.checked||false])
+  );
+  const updates = {nome, usuario, permissoes};
+  if(senha) updates.senha = senha;
+  await updateDoc(doc(db,'mt_usuarios',id), updates);
+  if(_usuarioLogado && _usuarioLogado.usuario === uDoc.data().usuario) {
+    _usuarioLogado.nome = nome;
+    _usuarioLogado.permissoes = permissoes;
+    sessionStorage.setItem('mt_user', JSON.stringify(_usuarioLogado));
+    document.querySelectorAll('.header span').forEach(s=>{ if(s.textContent===uDoc.data().nome) s.textContent=nome; });
+  }
+  document.getElementById('modal-editar-usuario').classList.remove('open');
+  await renderTabelaUsuarios();
+  showToast('Usuário atualizado!');
+};
+
+async function renderTabelaUsuarios() {
+  const snap = await getDocs(collection(db,'mt_usuarios'));
+  const usuarios = snap.docs.map(d=>({id:d.id,...d.data()}));
+  const isAdmin  = _usuarioLogado?.perfil==='admin';
+  const tb = document.getElementById('usuarios-tbody');
+  if(!tb) return;
+  tb.innerHTML = usuarios.map(u=>{
+    const perms  = u.perfil==='admin' ? PERMS_ADMIN : (u.permissoes||PERMS_PADRAO);
+    const ativas = TODAS_PERMISSOES.filter(p=>perms[p.key]);
+    const tags   = ativas.slice(0,3).map(p=>`<span style="display:inline-block;font-size:10px;background:rgba(26,95,168,0.1);color:var(--blue);border-radius:4px;padding:2px 6px;margin:1px">${p.label}</span>`).join('');
+    const mais   = ativas.length>3?`<span style="font-size:10px;color:var(--muted)">+${ativas.length-3}</span>`:'';
+    const uJson  = encodeURIComponent(JSON.stringify({id:u.id,nome:u.nome,usuario:u.usuario,perfil:u.perfil,permissoes:u.permissoes||PERMS_PADRAO}));
+    return `<tr>
+      <td style="font-weight:600">${u.nome}</td>
+      <td><code style="background:var(--bg3);padding:2px 8px;border-radius:4px;font-size:12px">${u.usuario}</code></td>
+      <td><span style="background:var(--bg3);padding:2px 8px;border-radius:4px;font-size:12px">${isAdmin?u.senha:'••••••'}</span></td>
+      <td><span class="badge ${u.perfil==='admin'?'badge-amber':'badge-blue'}">${u.perfil==='admin'?'Admin':'Equipe'}</span></td>
+      <td style="max-width:220px">${tags}${mais}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">
+        ${isAdmin?`
+          <button class="btn-ghost" style="padding:5px 10px;font-size:10px" onclick='abrirEdicaoUsuario(JSON.parse(decodeURIComponent("${uJson}")))'>Editar</button>
+          ${u.usuario!=='admin'?`<button class="btn-ghost" style="padding:5px 10px;font-size:10px;color:var(--red);border-color:var(--red)" onclick="deletarUsuario('${u.id}','${u.usuario}')">Remover</button>`:''}
+        `:'<span style="font-size:12px;color:var(--muted)">—</span>'}
+      </td>
+    </tr>`;
+  }).join('');
+  const navU = document.getElementById('nav-usuarios');
+  if(navU) navU.style.display = isAdmin?'':'none';
+}
+// ── GESTÃO DE USUÁRIOS ──
+function fmt(v){return'R$ '+(Math.round((v||0)*100)/100).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmtData(iso){try{return new Date(iso).toLocaleDateString('pt-BR')}catch{return '-'}}
+function badgeClass(s){return s==='Aprovado'?'badge-green':s==='Recusado'?'badge-red':'badge-amber'}
+
+window.showToast = function(msg,dur=2500) {
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+};
+
+window.showScreen = function(name,btn) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(name==='relatorio') renderRelatorio();
+  if(name==='materiais') renderTabelaMateriais();
+  if(name==='lista') renderListaOrcamentos();
+  if(name==='usuarios') renderTabelaUsuarios();
+  if(name==='materiais') { renderFiltrosCategorias(); renderListaCategorias(); popularSelectCategorias('g-nm-cat'); }
+};
+
+// ── PWA INSTALL BANNER (iOS + Android) ──
+let _deferredInstallPrompt = null;
+
+// Android — captura o evento de instalação
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _deferredInstallPrompt = e;
+  const dismissed = localStorage.getItem('mt_banner') === '0';
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  if(!dismissed && !isStandalone) {
+    setTimeout(()=>{
+      const b = document.getElementById('install-banner');
+      const desc = document.getElementById('banner-desc');
+      const btn  = document.getElementById('banner-install-btn');
+      if(b && desc && btn) {
+        desc.textContent = 'Toque em Instalar para adicionar à tela inicial';
+        btn.style.display = 'block';
+        btn.onclick = async () => {
+          _deferredInstallPrompt.prompt();
+          const { outcome } = await _deferredInstallPrompt.userChoice;
+          b.style.display = 'none';
+          localStorage.setItem('mt_banner','0');
+        };
+        b.style.display = 'flex';
+      }
+    }, 2000);
+  }
+});
+
+// iOS Safari
+(function() {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  const dismissed = localStorage.getItem('mt_banner') === '0';
+  if(isIOS && !isStandalone && !dismissed) {
+    setTimeout(()=>{
+      const b = document.getElementById('install-banner');
+      const desc = document.getElementById('banner-desc');
+      if(b && desc) {
+        desc.innerHTML = 'Toque em <strong style="color:rgba(255,255,255,0.9)">⎙ Compartilhar</strong> → <strong style="color:rgba(255,255,255,0.9)">"Adicionar à Tela de Início"</strong>';
+        b.style.display = 'flex';
+      }
+    }, 2000);
+  }
+})();
+
+// Detecta quando foi instalado
+window.addEventListener('appinstalled', () => {
+  localStorage.setItem('mt_banner','0');
+  const b = document.getElementById('install-banner');
+  if(b) b.style.display = 'none';
+});
+
+// init() só é chamado após login bem-sucedido
+</script>
+</body>
+</html>
