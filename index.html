@@ -67,7 +67,7 @@ document.currentScript.after(link);
   --header:#1a2332;
   --r:10px;
 }
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;display:flex}
 
 /* HEADER */
 .header{
@@ -88,6 +88,35 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 }
 .nav-btn:hover{color:#fff;background:rgba(255,255,255,0.06)}
 .nav-btn.active{color:#fff;border-bottom-color:var(--accent)}
+
+/* SIDEBAR */
+.sidebar{
+  width:220px;flex-shrink:0;background:var(--header);
+  min-height:100vh;position:sticky;top:0;align-self:flex-start;
+  display:flex;flex-direction:column;padding:18px 0;
+}
+.sidebar-logo{padding:0 20px 18px;display:flex;align-items:center;gap:10px;min-height:34px}
+.sidebar-logo img{width:34px;height:34px;border-radius:8px;object-fit:cover}
+.sidebar-nav{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+.side-btn{
+  display:flex;align-items:center;gap:12px;
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
+  color:rgba(255,255,255,0.65);padding:11px 20px;
+  border:none;border-left:3px solid transparent;background:none;cursor:pointer;
+  transition:all .2s;text-align:left;width:100%;
+}
+.side-btn .ico{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.side-btn:hover{color:#fff;background:rgba(255,255,255,0.06)}
+.side-btn.active{color:#fff;border-left-color:var(--accent);background:rgba(232,82,10,0.12)}
+.sidebar-footer{margin-top:auto;padding:14px 20px 0 20px;border-top:1px solid rgba(255,255,255,0.08)}
+.sidebar-user{font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:8px}
+.content-wrap{flex:1;min-width:0}
+
+/* DONUT CHART */
+.donut-wrap{display:flex;align-items:center;gap:14px;margin-top:14px}
+.donut-legend div{display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:4px}
+.donut-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
 
 /* MAIN */
 .main{padding:28px;max-width:1400px;margin:0 auto}
@@ -315,6 +344,14 @@ tr:hover td{background:rgba(232,82,10,0.03);cursor:pointer}
 
 /* MOBILE / PWA */
 @media (max-width: 768px) {
+  body{flex-direction:column}
+  .sidebar{width:100%;min-height:auto;flex-direction:row;overflow-x:auto;position:sticky;padding:8px 0}
+  .sidebar-logo{display:none}
+  .sidebar-nav{flex-direction:row}
+  .side-btn{padding:8px 12px;border-left:none;border-bottom:3px solid transparent;white-space:nowrap}
+  .side-btn.active{border-left:none;border-bottom-color:var(--accent);background:none}
+  .side-btn .label{display:none}
+  .sidebar-footer{display:none}
   .header { padding: 0 16px; }
   .logo span { display: none; }
   .nav-btn { padding: 0 11px; font-size: 11px; }
@@ -357,17 +394,23 @@ body {
 </head>
 <body>
 
-<div class="header">
-  <div class="logo">Opera<span style="color:var(--accent)">Os</span></div>
-  <nav class="nav">
-    <button class="nav-btn active" onclick="showScreen('orcamento',this)">Novo orçamento</button>
-    <button class="nav-btn" onclick="showScreen('lista',this)">Orçamentos</button>
-    <button class="nav-btn" onclick="showScreen('relatorio',this)">Relatório</button>
-    <button class="nav-btn" onclick="showScreen('materiais',this)">Materiais</button>
-    <button class="nav-btn" id="nav-usuarios" onclick="showScreen('usuarios',this)">Usuários</button>
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <img id="empresa-logo-img" src="" alt="" style="display:none">
+    <div class="logo">Opera<span style="color:var(--accent)">Os</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <button class="side-btn active" data-screen="orcamento" onclick="showScreen('orcamento',this)"><span class="ico">🧾</span><span class="label">Novo orçamento</span></button>
+    <button class="side-btn" onclick="showScreen('lista',this)"><span class="ico">📋</span><span class="label">Orçamentos</span></button>
+    <button class="side-btn" onclick="showScreen('relatorio',this)"><span class="ico">📊</span><span class="label">Relatório</span></button>
+    <button class="side-btn" onclick="showScreen('clientes',this)"><span class="ico">👥</span><span class="label">Clientes</span></button>
+    <button class="side-btn" onclick="showScreen('materiais',this)"><span class="ico">📦</span><span class="label">Materiais</span></button>
+    <button class="side-btn" id="nav-usuarios" onclick="showScreen('usuarios',this)"><span class="ico">👤</span><span class="label">Usuários</span></button>
   </nav>
+  <div class="sidebar-footer" id="sidebar-footer"></div>
 </div>
 
+<div class="content-wrap">
 <div class="main">
 
 <!-- ===== NOVO ORÇAMENTO ===== -->
@@ -489,6 +532,13 @@ body {
               <div class="mbar-val green" id="lucro-display">R$ 0</div>
             </div>
           </div>
+          <div class="donut-wrap">
+            <div id="donut-chart" style="width:56px;height:56px;border-radius:50%;background:conic-gradient(var(--accent) 0% 70%, var(--green) 70% 100%);flex-shrink:0"></div>
+            <div class="donut-legend">
+              <div><span class="donut-dot" style="background:var(--accent)"></span>Custo <strong id="donut-custo-pct">70%</strong></div>
+              <div><span class="donut-dot" style="background:var(--green)"></span>Lucro <strong id="donut-lucro-pct">30%</strong></div>
+            </div>
+          </div>
         </div>
 
         <!-- Total -->
@@ -547,11 +597,7 @@ body {
 <div class="screen" id="screen-relatorio">
   <div class="orc-header">
     <h2>Relatório mensal</h2>
-    <select class="search-field" id="sel-mes" onchange="renderRelatorio()" style="width:180px">
-      <option value="3">Março 2026</option>
-      <option value="2">Fevereiro 2026</option>
-      <option value="1">Janeiro 2026</option>
-    </select>
+    <select class="search-field" id="sel-mes" onchange="renderRelatorio()" style="width:180px"></select>
     <button class="btn-ghost" onclick="gerarPDFRelatorio()" style="background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700">
       ↓ Gerar PDF
     </button>
@@ -672,6 +718,19 @@ body {
     <button class="btn-ghost" onclick="toggleFormUsuario()">+ Novo usuário</button>
   </div>
 
+  <!-- Logo da empresa -->
+  <div class="card" style="margin-bottom:16px" id="painel-logo-empresa">
+    <div class="card-title"><span class="dot"></span>Logo da empresa</div>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <img id="logo-preview" src="" alt="" style="width:64px;height:64px;border-radius:10px;object-fit:cover;background:var(--bg3);display:none;border:1px solid var(--border)">
+      <div style="flex:1;min-width:220px">
+        <label class="field-label">Enviar logo (PNG ou JPG, até 800KB)</label>
+        <input type="file" accept="image/*" id="logo-file-input" onchange="uploadLogoEmpresa(this)" class="field" style="padding:8px">
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:10px">A logo aparece no menu lateral para todos os usuários do sistema.</div>
+  </div>
+
   <!-- Form novo usuário -->
   <div class="novo-mat-form" id="form-novo-usuario" style="margin-bottom:16px">
     <div class="card-title" style="margin-bottom:14px">Criar novo acesso</div>
@@ -710,7 +769,53 @@ body {
   </div>
 </div>
 
+<!-- ===== CLIENTES ===== -->
+<div class="screen" id="screen-clientes">
+  <div class="orc-header">
+    <h2>Clientes</h2>
+    <button class="btn-ghost" onclick="toggleFormCliente()">+ Novo cliente</button>
+    <input class="search-field" placeholder="Buscar cliente..." id="cliente-search-input" oninput="filtrarClientesTabela()">
+  </div>
+
+  <div class="novo-mat-form" id="form-novo-cliente" style="margin-bottom:16px">
+    <div class="card-title" style="margin-bottom:14px" id="form-cliente-title">Cadastrar cliente</div>
+    <input type="hidden" id="cli-id">
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px">
+      <div class="field-group" style="margin:0">
+        <label class="field-label">Nome completo / Razão social</label>
+        <input class="field" id="cli-nome" placeholder="Ex: João Silva">
+      </div>
+      <div class="field-group" style="margin:0">
+        <label class="field-label">Telefone</label>
+        <input class="field" id="cli-telefone" placeholder="(00) 00000-0000">
+      </div>
+      <div class="field-group" style="margin:0">
+        <label class="field-label">CPF / CNPJ</label>
+        <input class="field" id="cli-documento" placeholder="000.000.000-00">
+      </div>
+    </div>
+    <div class="field-group" style="margin-top:10px">
+      <label class="field-label">Endereço</label>
+      <input class="field" id="cli-endereco" placeholder="Rua, número, bairro, cidade...">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-primary" style="margin:0;max-width:200px" onclick="salvarCliente()">Salvar cliente</button>
+      <button class="btn btn-secondary" style="margin:0;max-width:140px" onclick="cancelarFormCliente()">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="orc-table-wrap">
+      <table>
+        <thead><tr><th>Nome</th><th>Telefone</th><th>CPF/CNPJ</th><th>Endereço</th><th>Ações</th></tr></thead>
+        <tbody id="clientes-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 </div><!-- /main -->
+</div><!-- /content-wrap -->
 
 <!-- MODAL EDITAR USUÁRIO -->
 <div class="modal-overlay" id="modal-editar-usuario" onclick="if(event.target===this)this.classList.remove('open')">
@@ -1038,20 +1143,46 @@ async function carregarUsuarios() {
 }
 
 function mostrarHeaderUsuario(nome) {
-  const headerEl = document.querySelector('.header');
-  if(!headerEl) return;
-  // Remove tag anterior se existir
-  const existing = headerEl.querySelector('.user-tag');
-  if(existing) existing.remove();
-  const tag = document.createElement('div');
-  tag.className = 'user-tag';
-  tag.style.cssText='display:flex;align-items:center;gap:10px;margin-left:16px';
-  tag.innerHTML=`
-    <span style="font-size:12px;color:rgba(255,255,255,0.55)">${nome}</span>
-    <button onclick="fazerLogout()" style="font-size:11px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;border-radius:6px;padding:4px 10px;cursor:pointer;font-family:Inter,sans-serif;font-weight:600">Sair</button>
+  const footEl = document.getElementById('sidebar-footer');
+  if(!footEl) return;
+  footEl.innerHTML = `
+    <div class="sidebar-user">${nome}</div>
+    <button onclick="fazerLogout()" style="font-size:11px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;border-radius:6px;padding:6px 10px;cursor:pointer;font-family:Inter,sans-serif;font-weight:600;width:100%">Sair</button>
   `;
-  headerEl.appendChild(tag);
 }
+
+function atualizarLogoImagem(base64) {
+  const img = document.getElementById('empresa-logo-img');
+  const preview = document.getElementById('logo-preview');
+  const textLogo = document.querySelector('.sidebar-logo .logo');
+  if(img) { img.src = base64; img.style.display='block'; }
+  if(textLogo) textLogo.style.display='none';
+  if(preview) { preview.src = base64; preview.style.display='block'; }
+}
+
+async function carregarConfigEmpresa() {
+  try {
+    const snap = await getDocs(collection(db,'mt_config'));
+    if(!snap.empty) {
+      const docs = snap.docs.map(d=>({id:d.id,...d.data()})).filter(d=>d.logoBase64);
+      if(docs.length) atualizarLogoImagem(docs[docs.length-1].logoBase64);
+    }
+  } catch(e){}
+}
+
+window.uploadLogoEmpresa = function(input) {
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 800*1024) { showToast('Imagem muito grande! Use até 800KB.'); return; }
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    const base64 = e.target.result;
+    try { await addDoc(collection(db,'mt_config'), {logoBase64: base64, atualizadoEm: new Date().toISOString()}); } catch(err){}
+    atualizarLogoImagem(base64);
+    showToast('Logo atualizada!');
+  };
+  reader.readAsDataURL(file);
+};
 
 function atualizarLogoEmpresa(nomeEmpresa) {
   const logoEl = document.querySelector('.logo');
@@ -1178,16 +1309,19 @@ async function init() {
   await carregarMateriais();
   await carregarClientes();
   await carregarOrcamentos();
+  await carregarConfigEmpresa();
   renderCatalogo();
+  popularSelectMeses();
   renderListaOrcamentos();
   renderRelatorio();
   renderTabelaMateriais();
+  renderTabelaClientes();
   atualizarNumeroOrcamento();
   renderFiltrosCategorias();
   popularSelectCategorias('g-nm-cat');
   // Controle de acesso: só admin vê aba Usuários
   const navU = document.getElementById('nav-usuarios');
-  if(navU) navU.style.display = isAdmin?'':'none';
+  if(navU) navU.style.display = (_usuarioLogado?.perfil==='admin')?'':'none';
 }
 
 // ── MATERIAIS ──
@@ -1608,9 +1742,12 @@ window.gerarPDFOrcamento = function(id) {
 
 
 window.gerarPDFRelatorio = function() {
-  const mes = parseInt(document.getElementById('sel-mes')?.value||3);
+  const partesPdf = (document.getElementById('sel-mes')?.value||'').split('-').map(Number);
+  const hojePdf = new Date();
+  const ano = partesPdf[0] || hojePdf.getFullYear();
+  const mes = partesPdf[1] || (hojePdf.getMonth()+1);
   const nomes = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-  const orcs  = window._orcamentos.filter(o=>o.mes===mes&&o.status==='Aprovado');
+  const orcs  = window._orcamentos.filter(o=>o.mes===mes && (o.ano||2026)===ano && o.status==='Aprovado');
   const fat   = orcs.reduce((a,o)=>a+o.venda,0);
   const custo = orcs.reduce((a,o)=>a+o.custoTotal,0);
   const lucro = fat-custo;
@@ -1629,7 +1766,7 @@ window.gerarPDFRelatorio = function() {
 
   const html = `<!DOCTYPE html><html lang="pt-BR"><head>
   <meta charset="UTF-8">
-  <title>Relatório ${nomes[mes]} — OperaOs</title>
+  <title>Relatório ${nomes[mes]} ${ano} — OperaOs</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:Arial,sans-serif;color:#1a1a1a;padding:40px;font-size:13px}
@@ -1659,7 +1796,7 @@ window.gerarPDFRelatorio = function() {
   <div class="header">
     <div>
       <div class="logo">Opera<span style="color:var(--accent)">Os</span></div>
-      <div class="titulo">Relatório interno de resultados — ${nomes[mes]} 2026</div>
+      <div class="titulo">Relatório interno de resultados — ${nomes[mes]} ${ano}</div>
     </div>
     <div class="data">Gerado em ${new Date().toLocaleDateString('pt-BR')}<br><span style="color:#e8520a;font-weight:700">USO INTERNO</span></div>
   </div>
@@ -1720,41 +1857,135 @@ window.gerarPDFRelatorio = function() {
 
 // ── CLIENTES (lê do CRM existente) ──
 async function carregarClientes() {
-  // Coleção correta do CRM: 'clientes' com campo 'nome'
-  const colecoes = ['clientes','pedidos','customers'];
-  let encontrou = false;
-  for(const col of colecoes) {
-    try {
-      const snap = await getDocs(collection(db,col));
-      if(!snap.empty) {
-        window._clientes = snap.docs.map(d=>({id:d.id,...d.data()}));
-        encontrou = true;
-        break;
-      }
-    } catch(e){}
-  }
-  // Popula select — campo 'nome'
-  const sel = document.getElementById('sel-cliente');
-  if(window._clientes.length>0) {
-    // Ordena por nome alfabeticamente
-    const sorted = [...window._clientes].sort((a,b)=>{
-      const na = (a.nome||a.clienteNome||a.name||a.empresa||'').toLowerCase();
-      const nb = (b.nome||b.clienteNome||b.name||b.empresa||'').toLowerCase();
-      return na.localeCompare(nb,'pt-BR');
-    });
-    sorted.forEach(c=>{
-      const nome = c.nome||c.clienteNome||c.name||c.empresa||'Cliente '+c.id;
-      if(!nome.trim()) return; // Ignora registros sem nome
-      const opt = document.createElement('option');
-      opt.value = c.id;
-      opt.textContent = nome;
-      sel.appendChild(opt);
-    });
-  } else {
-    // Permite digitar manualmente se não encontrar clientes
-    sel.outerHTML = '<input class="field" id="sel-cliente" placeholder="Nome do cliente...">';
-  }
+  try {
+    const snap = await getDocs(collection(db,'clientes'));
+    window._clientes = snap.docs.map(d=>({id:d.id,...d.data()}));
+  } catch(e) { window._clientes = []; }
+  popularSelectClientes();
 }
+
+function popularSelectClientes() {
+  const sel = document.getElementById('sel-cliente');
+  if(!sel || sel.tagName!=='SELECT') return;
+  const valorAtual = sel.value;
+  sel.innerHTML = '<option value="">Selecione o cliente...</option>';
+  const sorted = [...window._clientes].sort((a,b)=>(a.nome||'').toLowerCase().localeCompare((b.nome||'').toLowerCase(),'pt-BR'));
+  sorted.forEach(c=>{
+    if(!c.nome || !c.nome.trim()) return;
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.nome;
+    sel.appendChild(opt);
+  });
+  if([...sel.options].some(o=>o.value===valorAtual)) sel.value = valorAtual;
+}
+
+// ── GESTÃO DE CLIENTES ──
+window.toggleFormCliente = function() {
+  document.getElementById('form-novo-cliente').classList.toggle('open');
+};
+
+window.cancelarFormCliente = function() {
+  document.getElementById('cli-id').value = '';
+  document.getElementById('cli-nome').value = '';
+  document.getElementById('cli-telefone').value = '';
+  document.getElementById('cli-documento').value = '';
+  document.getElementById('cli-endereco').value = '';
+  document.getElementById('form-cliente-title').textContent = 'Cadastrar cliente';
+  document.getElementById('form-novo-cliente').classList.remove('open');
+};
+
+window.salvarCliente = async function() {
+  const id = document.getElementById('cli-id').value;
+  const nome = document.getElementById('cli-nome').value.trim();
+  const telefone = document.getElementById('cli-telefone').value.trim();
+  const documento = document.getElementById('cli-documento').value.trim();
+  const endereco = document.getElementById('cli-endereco').value.trim();
+  if(!nome) { showToast('Digite o nome do cliente!'); return; }
+  const dataCliente = { nome, telefone, documento, endereco };
+  if(id) {
+    try { await updateDoc(doc(db,'clientes',id), dataCliente); } catch(e){}
+    const c = window._clientes.find(x=>x.id===id);
+    if(c) Object.assign(c, dataCliente);
+    showToast('Cliente atualizado!');
+  } else {
+    const ref = await addDoc(collection(db,'clientes'), dataCliente);
+    window._clientes.push({id:ref.id, ...dataCliente});
+    showToast('Cliente cadastrado!');
+  }
+  cancelarFormCliente();
+  popularSelectClientes();
+  renderTabelaClientes();
+};
+
+window.editarCliente = function(id) {
+  const c = window._clientes.find(x=>x.id===id);
+  if(!c) return;
+  document.getElementById('cli-id').value = c.id;
+  document.getElementById('cli-nome').value = c.nome||'';
+  document.getElementById('cli-telefone').value = c.telefone||'';
+  document.getElementById('cli-documento').value = c.documento||'';
+  document.getElementById('cli-endereco').value = c.endereco||'';
+  document.getElementById('form-cliente-title').textContent = 'Editar cliente';
+  document.getElementById('form-novo-cliente').classList.add('open');
+};
+
+window.deletarCliente = async function(id) {
+  if(!confirm('Remover este cliente?')) return;
+  try { await deleteDoc(doc(db,'clientes',id)); } catch(e){}
+  window._clientes = window._clientes.filter(c=>c.id!==id);
+  popularSelectClientes();
+  renderTabelaClientes();
+  showToast('Cliente removido.');
+};
+
+window._clienteFiltro = '';
+window.filtrarClientesTabela = function() {
+  window._clienteFiltro = document.getElementById('cliente-search-input').value.toLowerCase();
+  renderTabelaClientes();
+};
+
+function renderTabelaClientes() {
+  const tb = document.getElementById('clientes-tbody');
+  if(!tb) return;
+  let lista = [...window._clientes].sort((a,b)=>(a.nome||'').toLowerCase().localeCompare((b.nome||'').toLowerCase(),'pt-BR'));
+  const q = window._clienteFiltro||'';
+  if(q) lista = lista.filter(c=>(c.nome||'').toLowerCase().includes(q));
+  tb.innerHTML = lista.length ? lista.map(c=>`
+    <tr>
+      <td style="font-weight:600">${c.nome||'-'}</td>
+      <td>${c.telefone||'—'}</td>
+      <td>${c.documento||'—'}</td>
+      <td style="color:var(--muted);max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.endereco||'—'}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn-ghost" style="padding:5px 10px;font-size:10px" onclick="gerarOrcamentoParaCliente('${c.id}')">📄 Orçamento</button>
+        <button class="btn-ghost" style="padding:5px 10px;font-size:10px" onclick="editarCliente('${c.id}')">Editar</button>
+        <button class="btn-ghost" style="padding:5px 10px;font-size:10px;color:var(--red);border-color:var(--red)" onclick="deletarCliente('${c.id}')">Remover</button>
+      </td>
+    </tr>
+  `).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:30px">Nenhum cliente cadastrado.</td></tr>';
+}
+
+window.gerarOrcamentoParaCliente = function(clienteId) {
+  const c = window._clientes.find(x=>x.id===clienteId);
+  if(!c) return;
+  const btnOrc = document.querySelector('.side-btn[data-screen="orcamento"]');
+  showScreen('orcamento', btnOrc);
+  const sel = document.getElementById('sel-cliente');
+  if(sel && sel.tagName==='SELECT') sel.value = clienteId;
+  const anteriores = window._orcamentos
+    .filter(o=>o.cliente===c.nome)
+    .sort((a,b)=>new Date(b.criadoEm)-new Date(a.criadoEm));
+  window._itensSelecionados = {};
+  if(anteriores.length) {
+    anteriores[0].itens.forEach(it=>{ window._itensSelecionados[it.id] = {...it}; });
+    showToast('Orçamento pré-preenchido com os últimos itens de '+c.nome);
+  } else {
+    showToast('Orçamento iniciado para '+c.nome+' — selecione os materiais');
+  }
+  renderCatalogo();
+  renderItens();
+};
 
 // ── ORÇAMENTOS ──
 async function carregarOrcamentos() {
@@ -1835,6 +2066,15 @@ window.recalcular = function() {
   document.getElementById('lucro-pct-label').textContent = lucroP.toFixed(1)+'%';
   document.getElementById('lucro-bar-fill').style.width = Math.min(100,lucroP)+'%';
   document.getElementById('lucro-bar-fill').style.background = lucroP>20?'var(--green)':lucroP>10?'var(--accent)':'var(--red)';
+
+  const custoP = venda>0 ? Math.max(0,Math.min(100, custoTotal/venda*100)) : 0;
+  const lucroPDonut = Math.max(0, 100-custoP);
+  const donut = document.getElementById('donut-chart');
+  if(donut) donut.style.background = `conic-gradient(var(--accent) 0% ${custoP}%, var(--green) ${custoP}% 100%)`;
+  const dCusto = document.getElementById('donut-custo-pct');
+  const dLucro = document.getElementById('donut-lucro-pct');
+  if(dCusto) dCusto.textContent = custoP.toFixed(0)+'%';
+  if(dLucro) dLucro.textContent = lucroPDonut.toFixed(0)+'%';
 };
 
 window.validarMoPct = function(el) {
@@ -1897,12 +2137,14 @@ window.salvarOrcamento = async function() {
     criadoEm: agora,
     alteradoEm: null, alteradoPor: null,
     historico: [{ data: agora, usuario: _usuarioLogado?.nome||'Sistema', acao: 'Criado' }],
-    mes: new Date().getMonth()+1
+    mes: new Date().getMonth()+1,
+    ano: new Date().getFullYear()
   };
   await addDoc(collection(db,'mt_orcamentos'),data);
   window._orcamentos.push({id:'new_'+Date.now(),...data});
   showToast('Orçamento salvo no Firebase!');
   limparOrcamento();
+  popularSelectMeses();
   renderListaOrcamentos();
   renderRelatorio();
   atualizarNumeroOrcamento();
@@ -2216,9 +2458,31 @@ window.atualizarStatus = async function(status) {
 };
 
 // ── RELATÓRIO ──
+function popularSelectMeses() {
+  const sel = document.getElementById('sel-mes');
+  if(!sel) return;
+  const nomesMeses = ['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const mapa = new Map();
+  window._orcamentos.forEach(o=>{
+    const ano = o.ano||2026;
+    const mes = o.mes||1;
+    mapa.set(ano+'-'+mes, {ano, mes});
+  });
+  const hoje = new Date();
+  const chaveAtual = hoje.getFullYear()+'-'+(hoje.getMonth()+1);
+  mapa.set(chaveAtual, {ano:hoje.getFullYear(), mes:hoje.getMonth()+1});
+  const lista = [...mapa.entries()].sort((a,b)=> b[1].ano-a[1].ano || b[1].mes-a[1].mes);
+  const valorAtual = sel.value;
+  sel.innerHTML = lista.map(([key,v])=>`<option value="${key}">${nomesMeses[v.mes]} ${v.ano}</option>`).join('');
+  sel.value = lista.some(([k])=>k===valorAtual) ? valorAtual : chaveAtual;
+}
+
 window.renderRelatorio = function() {
-  const mes = parseInt(document.getElementById('sel-mes')?.value||3);
-  const orcs = window._orcamentos.filter(o=>o.mes===mes&&o.status==='Aprovado');
+  const partes = (document.getElementById('sel-mes')?.value||'').split('-').map(Number);
+  const hoje = new Date();
+  const ano = partes[0] || hoje.getFullYear();
+  const mes = partes[1] || (hoje.getMonth()+1);
+  const orcs = window._orcamentos.filter(o=>o.mes===mes && (o.ano||2026)===ano && o.status==='Aprovado');
   const fat = orcs.reduce((a,o)=>a+o.venda,0);
   const custo = orcs.reduce((a,o)=>a+o.custoTotal,0);
   const lucro = fat-custo;
@@ -2598,13 +2862,14 @@ window.showToast = function(msg,dur=2500) {
 
 window.showScreen = function(name,btn) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.side-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
   if(btn)btn.classList.add('active');
-  if(name==='relatorio') renderRelatorio();
+  if(name==='relatorio') { popularSelectMeses(); renderRelatorio(); }
   if(name==='materiais') renderTabelaMateriais();
   if(name==='lista') renderListaOrcamentos();
   if(name==='usuarios') renderTabelaUsuarios();
+  if(name==='clientes') renderTabelaClientes();
   if(name==='materiais') { renderFiltrosCategorias(); renderListaCategorias(); popularSelectCategorias('g-nm-cat'); }
 };
 
