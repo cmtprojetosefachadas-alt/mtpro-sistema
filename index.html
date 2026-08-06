@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>MTPRO — Sistema de Orçamentos</title>
+<title>OperaOs — Sistema de Orçamentos</title>
 
 <!-- PWA -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="MTPRO">
+<meta name="apple-mobile-web-app-title" content="OperaOs">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1a2332">
-<meta name="description" content="MTPRO — Sistema de Orçamentos">
+<meta name="description" content="OperaOs — Sistema de Orçamentos">
 
 <!-- Ícone para iPhone (tela inicial) -->
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjMWEyMzMyIi8+PHRleHQgeD0iNTAlIiB5PSI1MyUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSI3MiIgZmlsbD0iI2U4NTIwYSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+Q01UPC90ZXh0Pjwvc3ZnPg==">
@@ -20,10 +20,10 @@
 <!-- Manifest inline via JS -->
 <script>
 const manifest = {
-  name: "MTPRO — Sistema de Orçamentos",
-  short_name: "MTPRO",
-  description: "MTPRO — Sistema de Orçamentos",
-  start_url: "./cmt-orcamentos.html",
+  name: "OperaOs — Sistema de Orçamentos",
+  short_name: "OperaOs",
+  description: "OperaOs — Sistema de Orçamentos",
+  start_url: "./index.html",
   display: "standalone",
   orientation: "any",
   background_color: "#1a2332",
@@ -358,7 +358,7 @@ body {
 <body>
 
 <div class="header">
-  <div class="logo">MT<span style="color:var(--accent)">PRO</span></div>
+  <div class="logo">Opera<span style="color:var(--accent)">Os</span></div>
   <nav class="nav">
     <button class="nav-btn active" onclick="showScreen('orcamento',this)">Novo orçamento</button>
     <button class="nav-btn" onclick="showScreen('lista',this)">Orçamentos</button>
@@ -895,7 +895,7 @@ body {
 ">
   <div style="width:44px;height:44px;border-radius:10px;background:#e8520a;display:flex;align-items:center;justify-content:center;font-family:Arial;font-weight:900;font-size:13px;color:#fff;flex-shrink:0">MT</div>
   <div style="flex:1">
-    <div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:#fff">Instalar MTPRO</div>
+    <div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:#fff">Instalar OperaOs</div>
     <div id="banner-desc" style="font-size:11px;color:rgba(255,255,255,0.55);margin-top:2px"></div>
   </div>
   <button id="banner-install-btn" style="display:none;background:var(--accent);border:none;color:#fff;border-radius:6px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap">Instalar</button>
@@ -914,7 +914,7 @@ body {
       background:var(--header);border-radius:12px 12px 0 0;
       padding:28px 32px 24px;text-align:center;
     ">
-      <div style="font-family:'Inter',sans-serif;font-size:22px;font-weight:800;color:#fff;letter-spacing:0.01em">MT<span style="color:var(--accent)">PRO</span></div>
+      <div style="font-family:'Inter',sans-serif;font-size:22px;font-weight:800;color:#fff;letter-spacing:0.01em">Opera<span style="color:var(--accent)">Os</span></div>
       <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px">Sistema de Orçamentos</div>
     </div>
     <!-- Form -->
@@ -954,7 +954,7 @@ body {
 ">
   <div style="width:100%;max-width:480px;padding:24px">
     <div style="background:var(--header);border-radius:12px 12px 0 0;padding:28px 32px 24px;text-align:center">
-      <div style="font-family:'Inter',sans-serif;font-size:22px;font-weight:800;color:#fff">MT<span style="color:var(--accent)">PRO</span></div>
+      <div style="font-family:'Inter',sans-serif;font-size:22px;font-weight:800;color:#fff">Opera<span style="color:var(--accent)">Os</span></div>
       <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px">Configuração inicial — Bem-vindo!</div>
     </div>
     <div style="background:#fff;border-radius:0 0 12px 12px;padding:28px 32px;box-shadow:0 8px 32px rgba(0,0,0,0.12)">
@@ -1023,7 +1023,7 @@ const db = getFirestore(app);
 // ── USUÁRIOS INTERNOS ──
 // Senha padrão inicial: cada usuário pode ser criado pelo admin
 const USUARIOS_PADRAO = [
-  { usuario: 'admin', senha: 'admin123', nome: 'Administrador', perfil: 'admin', primeiroAcesso: true },
+  { usuario: 'admin', senha: 'ADMIN3920', nome: 'Administrador', perfil: 'admin', primeiroAcesso: true },
 ];
 
 let _usuarioLogado = null;
@@ -1122,7 +1122,7 @@ window.finalizarSetup = async function() {
   document.getElementById('setup-screen').style.display='none';
   mostrarHeaderUsuario(nome);
   atualizarLogoEmpresa(empresa);
-  showToast('Configuração salva! Bem-vindo ao MTPRO, '+nome+'! 🎉');
+  showToast('Configuração salva! Bem-vindo ao OperaOs, '+nome+'! 🎉');
   await init();
 };
 
@@ -1545,7 +1545,7 @@ window.gerarPDFOrcamento = function(id) {
   <!-- HEADER -->
   <div class="header">
     <div class="logo-box">
-      <div class="logo">MT<span style="color:var(--accent)">PRO</span></div>
+      <div class="logo">Opera<span style="color:var(--accent)">Os</span></div>
       <div class="sub">Comunicação visual e fachadas comerciais</div>
     </div>
     <div class="orc-info">
@@ -1594,7 +1594,7 @@ window.gerarPDFOrcamento = function(id) {
 
   <!-- FOOTER -->
   <div class="footer">
-    ${o.moResponsavel?`<span>Responsável pela execução: <strong>${o.moResponsavel}</strong></span>`:'<span>MTPRO — Documento interno</span>'}
+    ${o.moResponsavel?`<span>Responsável pela execução: <strong>${o.moResponsavel}</strong></span>`:'<span>OperaOs — Documento interno</span>'}
     <span>Gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
   </div>
 
@@ -1629,7 +1629,7 @@ window.gerarPDFRelatorio = function() {
 
   const html = `<!DOCTYPE html><html lang="pt-BR"><head>
   <meta charset="UTF-8">
-  <title>Relatório ${nomes[mes]} — MTPRO</title>
+  <title>Relatório ${nomes[mes]} — OperaOs</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:Arial,sans-serif;color:#1a1a1a;padding:40px;font-size:13px}
@@ -1658,7 +1658,7 @@ window.gerarPDFRelatorio = function() {
   </head><body>
   <div class="header">
     <div>
-      <div class="logo">MT<span style="color:var(--accent)">PRO</span></div>
+      <div class="logo">Opera<span style="color:var(--accent)">Os</span></div>
       <div class="titulo">Relatório interno de resultados — ${nomes[mes]} 2026</div>
     </div>
     <div class="data">Gerado em ${new Date().toLocaleDateString('pt-BR')}<br><span style="color:#e8520a;font-weight:700">USO INTERNO</span></div>
@@ -1709,7 +1709,7 @@ window.gerarPDFRelatorio = function() {
     </tbody>
   </table>
 
-  <div class="footer">MTPRO — Documento de uso interno — Gerado automaticamente</div>
+  <div class="footer">OperaOs — Documento de uso interno — Gerado automaticamente</div>
   <script>window.onload=()=>window.print()<\/script>
   </body></html>`;
 
