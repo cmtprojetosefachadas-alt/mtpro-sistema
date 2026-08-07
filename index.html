@@ -1483,7 +1483,9 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   try {
+  window._etapaLogin = 'verificarSuperAdmin';
   _isSuperAdmin = await verificarSuperAdmin(user.uid);
+  window._etapaLogin = 'carregarPerfilUsuario';
   const perfil = await carregarPerfilUsuario(user.uid);
 
   // Conta de Super Admin "pura", sem empresa vinculada — só abre o painel de gestão.
@@ -1503,6 +1505,7 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
+  window._etapaLogin = 'carregarEmpresa';
   const empresa = await carregarEmpresa(perfil.companyId);
   if(!empresa) {
     const erro = document.getElementById('login-erro');
@@ -1546,9 +1549,9 @@ onAuthStateChanged(auth, async (user) => {
   } catch(e) {
     // Nunca mais falha em silêncio: qualquer erro (ex: regra do Firestore
     // bloqueando alguma leitura) aparece na tela com o motivo real.
-    console.error('Erro ao carregar sessão:', e);
+    console.error('Erro ao carregar sessão em', window._etapaLogin, ':', e);
     const erro = document.getElementById('login-erro');
-    if(erro) { erro.style.display='block'; erro.textContent = 'Erro ao carregar sua conta: '+(e.code||e.message||'desconhecido'); }
+    if(erro) { erro.style.display='block'; erro.textContent = 'Erro em "'+window._etapaLogin+'": '+(e.code||e.message||'desconhecido'); }
     document.getElementById('login-screen').style.display='flex';
     try { await signOut(auth); } catch(e2){}
   }
