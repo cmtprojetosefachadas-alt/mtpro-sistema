@@ -406,6 +406,7 @@ body {
     <button class="side-btn" onclick="showScreen('clientes',this)"><span class="ico">👥</span><span class="label">Clientes</span></button>
     <button class="side-btn" onclick="showScreen('materiais',this)"><span class="ico">📦</span><span class="label">Materiais</span></button>
     <button class="side-btn" id="nav-usuarios" onclick="showScreen('usuarios',this)"><span class="ico">👤</span><span class="label">Usuários</span></button>
+    <button class="side-btn" id="nav-superadmin" style="display:none" onclick="showScreen('superadmin',this)"><span class="ico">🛡️</span><span class="label">Super Admin</span></button>
   </nav>
   <div class="sidebar-footer" id="sidebar-footer"></div>
 </div>
@@ -776,12 +777,12 @@ body {
         <input class="field" id="nu-nome" placeholder="Ex: João Silva">
       </div>
       <div class="field-group" style="margin:0">
-        <label class="field-label">Usuário (login)</label>
-        <input class="field" id="nu-usuario" placeholder="Ex: joao">
+        <label class="field-label">E-mail (login)</label>
+        <input class="field" id="nu-usuario" type="email" placeholder="joao@empresa.com">
       </div>
       <div class="field-group" style="margin:0">
-        <label class="field-label">Senha</label>
-        <input class="field" id="nu-senha" placeholder="Senha de acesso">
+        <label class="field-label">Senha inicial</label>
+        <input class="field" id="nu-senha" placeholder="Mínimo 6 caracteres">
       </div>
       <div class="field-group" style="margin:0">
         <label class="field-label" style="visibility:hidden">.</label>
@@ -797,11 +798,32 @@ body {
     <table>
       <thead>
         <tr>
-          <th>Nome</th><th>Usuário</th><th>Senha</th><th>Perfil</th><th>Permissões</th><th>Ações</th>
+          <th>Nome</th><th>E-mail</th><th>Perfil</th><th>Permissões</th><th>Ações</th>
         </tr>
       </thead>
       <tbody id="usuarios-tbody"></tbody>
     </table>
+  </div>
+</div>
+
+<!-- ===== SUPER ADMIN ===== -->
+<div class="screen" id="screen-superadmin">
+  <div class="orc-header">
+    <h2>Painel Super Admin</h2>
+    <input class="search-field" placeholder="Buscar empresa..." id="superadmin-search-input" oninput="filtrarEmpresasSuperAdmin()">
+  </div>
+  <div style="font-size:12px;color:var(--muted);margin:-8px 0 16px">
+    Visão geral de todas as empresas do OperaOS. Mudanças aqui afetam o acesso da empresa imediatamente.
+  </div>
+  <div class="card">
+    <div class="orc-table-wrap">
+      <table>
+        <thead>
+          <tr><th>Empresa</th><th>Plano</th><th>Status</th><th>Criada em</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="superadmin-tbody"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -864,13 +886,13 @@ body {
         <input class="field" id="eu-nome" placeholder="Nome">
       </div>
       <div class="field-group" style="margin:0">
-        <label class="field-label">Usuário (login)</label>
-        <input class="field" id="eu-usuario" placeholder="login">
+        <label class="field-label">E-mail (login)</label>
+        <input class="field" id="eu-usuario" disabled style="opacity:0.6;cursor:not-allowed">
       </div>
     </div>
     <div class="field-group">
-      <label class="field-label">Nova senha <span style="color:var(--muted);font-weight:400">(deixe em branco para não alterar)</span></label>
-      <input class="field" id="eu-senha" type="password" placeholder="••••••••">
+      <label class="field-label">Senha</label>
+      <button class="btn-ghost" type="button" style="width:100%;padding:10px" onclick="enviarResetSenhaUsuario()">Enviar link de redefinição de senha por e-mail</button>
     </div>
 
     <!-- PERMISSÕES -->
@@ -1115,8 +1137,8 @@ body {
     </div>
     <!-- Form -->
     <div style="background:#fff;border-radius:0 0 12px 12px;padding:28px 32px;box-shadow:0 8px 32px rgba(0,0,0,0.12)">
-      <div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:5px">Usuário</div>
-      <input id="login-user" class="field" placeholder="seu.usuario" autocomplete="username"
+      <div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:5px">E-mail</div>
+      <input id="login-user" class="field" type="email" placeholder="voce@empresa.com" autocomplete="username"
         style="margin-bottom:14px" onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()">
       <div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:5px">Senha</div>
       <input id="login-pass" class="field" type="password" placeholder="••••••••" autocomplete="current-password"
@@ -1125,7 +1147,7 @@ body {
         display:none;font-size:12px;color:var(--red);
         background:rgba(204,34,34,0.08);border-radius:6px;
         padding:8px 12px;margin-top:10px;font-weight:500;
-      ">Usuário ou senha incorretos.</div>
+      ">E-mail ou senha incorretos.</div>
       <button onclick="fazerLogin()" style="
         width:100%;margin-top:18px;padding:13px;
         background:var(--accent);color:#fff;border:none;
@@ -1135,8 +1157,9 @@ body {
       " onmouseover="this.style.background='#c94208'" onmouseout="this.style.background='var(--accent)'">
         Entrar
       </button>
-      <div style="font-size:11px;color:var(--muted2);text-align:center;margin-top:16px">
-        Acesso restrito — uso interno
+      <div style="display:flex;justify-content:space-between;margin-top:16px">
+        <a onclick="recuperarSenha()" style="font-size:12px;color:var(--muted2);cursor:pointer;text-decoration:underline">Esqueci minha senha</a>
+        <a onclick="document.getElementById('login-screen').style.display='none';document.getElementById('setup-screen').style.display='flex'" style="font-size:12px;color:var(--accent);cursor:pointer;text-decoration:underline">Cadastrar minha empresa</a>
       </div>
     </div>
   </div>
@@ -1155,7 +1178,7 @@ body {
     </div>
     <div style="background:#fff;border-radius:0 0 12px 12px;padding:28px 32px;box-shadow:0 8px 32px rgba(0,0,0,0.12)">
       <div style="background:rgba(232,82,10,0.08);border:1px solid rgba(232,82,10,0.2);border-radius:8px;padding:12px 14px;margin-bottom:20px;font-size:13px;color:var(--accent);font-weight:500">
-        🎉 Primeiro acesso detectado! Configure sua empresa agora.
+        🎉 Cadastre sua empresa e comece agora — sem instalação, sem espera.
       </div>
 
       <div class="field-group">
@@ -1168,8 +1191,8 @@ body {
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="field-group" style="margin:0">
-          <label class="field-label">Novo usuário (login)</label>
-          <input class="field" id="setup-usuario" placeholder="Ex: joao" style="background:#fff">
+          <label class="field-label">Seu e-mail (será seu login)</label>
+          <input class="field" id="setup-usuario" type="email" placeholder="voce@empresa.com" style="background:#fff">
         </div>
         <div class="field-group" style="margin:0">
           <label class="field-label">Nova senha</label>
@@ -1187,10 +1210,10 @@ body {
         border-radius:8px;font-family:'Inter',sans-serif;
         font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;
       " onmouseover="this.style.background='#c94208'" onmouseout="this.style.background='var(--accent)'">
-        Configurar e entrar no sistema
+        Criar empresa e entrar no sistema
       </button>
-      <div style="font-size:11px;color:var(--muted2);text-align:center;margin-top:14px">
-        Após configurar, use seu novo usuário e senha para entrar.
+      <div style="font-size:12px;color:var(--muted2);text-align:center;margin-top:14px">
+        Já tem uma conta? <a onclick="document.getElementById('setup-screen').style.display='none';document.getElementById('login-screen').style.display='flex'" style="color:var(--accent);cursor:pointer;text-decoration:underline">Entrar</a>
       </div>
     </div>
   </div>
@@ -1200,9 +1223,12 @@ body {
 
 <!-- Firebase -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy }
+import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, getDoc, doc, setDoc, updateDoc, deleteDoc, onSnapshot, query, orderBy, where }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged,
+  sendPasswordResetEmail, updateProfile }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCEe7m5BS1wd-8sq_B9J3Lp_NQWxJ2Xx-k",
@@ -1215,6 +1241,14 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Retorna o companyId da empresa do usuário logado — usado em toda leitura/escrita
+// pra garantir que uma empresa nunca acesse dado de outra.
+function companyId() { return _usuarioLogado?.companyId || null; }
+
+// Query pronta filtrada pela empresa do usuário logado — usar em todo getDocs de dado de negócio.
+function colEmpresa(nome) { return query(collection(db, nome), where('companyId', '==', companyId())); }
 
 // ── LICENÇA (controle de acesso do revendedor) ──
 // LICENSE_ENABLED e os campos abaixo são preenchidos automaticamente pelo
@@ -1265,28 +1299,42 @@ if (typeof window !== 'undefined') {
     if (!licenseDb || !_usuarioLogado) return;
     const licenca = await verificarLicenca();
     if (!licenca.ok) {
-      sessionStorage.removeItem('mt_user');
       alert(licenca.motivo);
-      location.reload();
+      await signOut(auth);
     }
   }, 120000); // a cada 2 minutos
 }
 
-// ── USUÁRIOS INTERNOS ──
-// Senha padrão inicial: cada usuário pode ser criado pelo admin
-const USUARIOS_PADRAO = [
-  { usuario: 'admin', senha: 'ADMIN', nome: 'Administrador', perfil: 'admin', primeiroAcesso: true },
-];
+// ── USUÁRIOS / AUTENTICAÇÃO (Firebase Auth + multi-tenant) ──
+// A partir daqui, "usuario/senha" caseiro sai de cena. Login é feito por
+// e-mail e senha via Firebase Authentication. Cada usuário tem um documento
+// em 'usuarios/{uid}' (uid = mesmo id do Firebase Auth) contendo companyId,
+// perfil e permissões. Todo dado de negócio (clientes, orçamentos, materiais,
+// categorias) carrega um campo companyId e só é lido/gravado filtrado por ele.
 
-let _usuarioLogado = null;
+let _usuarioLogado = null; // {uid, email, nome, perfil, companyId, permissoes}
+let _empresaAtual  = null; // {id, nome, plano, status}
+let _isSuperAdmin  = false;
 
-async function carregarUsuarios() {
-  const snap = await getDocs(collection(db,'mt_usuarios'));
-  if(snap.empty) {
-    for(const u of USUARIOS_PADRAO) await addDoc(collection(db,'mt_usuarios'),u);
-    return USUARIOS_PADRAO;
-  }
-  return snap.docs.map(d=>({id:d.id,...d.data()}));
+async function carregarPerfilUsuario(uid) {
+  const ref = doc(db,'usuarios',uid);
+  const snap = await getDoc(ref);
+  return snap.exists() ? { uid, ...snap.data() } : null;
+}
+
+async function carregarEmpresa(id) {
+  if(!id) return null;
+  const snap = await getDoc(doc(db,'empresas',id));
+  return snap.exists() ? { id, ...snap.data() } : null;
+}
+
+// Super Admin é definido por um documento em 'superadmins/{uid}' — só quem
+// tem esse doc (criado manualmente no Console do Firebase) vê o painel.
+async function verificarSuperAdmin(uid) {
+  try {
+    const snap = await getDoc(doc(db,'superadmins',uid));
+    return snap.exists();
+  } catch(e) { return false; }
 }
 
 function mostrarHeaderUsuario(nome) {
@@ -1307,14 +1355,10 @@ function atualizarLogoImagem(base64) {
   if(preview) { preview.src = base64; preview.style.display='block'; }
 }
 
+// A logo agora fica gravada no próprio documento da empresa (empresas/{companyId}),
+// nunca numa coleção global — assim uma empresa nunca puxa a logo de outra.
 async function carregarConfigEmpresa() {
-  try {
-    const snap = await getDocs(collection(db,'mt_config'));
-    if(!snap.empty) {
-      const docs = snap.docs.map(d=>({id:d.id,...d.data()})).filter(d=>d.logoBase64);
-      if(docs.length) atualizarLogoImagem(docs[docs.length-1].logoBase64);
-    }
-  } catch(e){}
+  if(_empresaAtual?.logoBase64) atualizarLogoImagem(_empresaAtual.logoBase64);
 }
 
 window.uploadLogoEmpresa = function(input) {
@@ -1324,7 +1368,10 @@ window.uploadLogoEmpresa = function(input) {
   const reader = new FileReader();
   reader.onload = async function(e) {
     const base64 = e.target.result;
-    try { await addDoc(collection(db,'mt_config'), {logoBase64: base64, atualizadoEm: new Date().toISOString()}); } catch(err){}
+    try {
+      await updateDoc(doc(db,'empresas',companyId()), {logoBase64: base64, atualizadoEm: new Date().toISOString()});
+      _empresaAtual.logoBase64 = base64;
+    } catch(err){}
     atualizarLogoImagem(base64);
     showToast('Logo atualizada!');
   };
@@ -1342,99 +1389,160 @@ function atualizarLogoEmpresa(nomeEmpresa) {
 }
 
 window.fazerLogin = async function() {
-  const usuario = document.getElementById('login-user').value.trim().toLowerCase();
-  const senha   = document.getElementById('login-pass').value;
-  const erro    = document.getElementById('login-erro');
-  if(!usuario||!senha){ erro.style.display='block'; erro.textContent='Preencha usuário e senha.'; return; }
-  const usuarios = await carregarUsuarios();
-  const found = usuarios.find(u => u.usuario===usuario && u.senha===senha);
-  if(!found) { erro.style.display='block'; erro.textContent='Usuário ou senha incorretos.'; return; }
-
-  const licenca = await verificarLicenca();
-  if(!licenca.ok) { erro.style.display='block'; erro.textContent=licenca.motivo; return; }
-
-  // Verifica se é primeiro acesso
-  if(found.primeiroAcesso) {
-    _usuarioLogado = found;
-    document.getElementById('login-screen').style.display='none';
-    const setup = document.getElementById('setup-screen');
-    if(setup) setup.style.display='flex';
-    return;
+  const email = document.getElementById('login-user').value.trim();
+  const senha = document.getElementById('login-pass').value;
+  const erro  = document.getElementById('login-erro');
+  erro.style.display='none';
+  if(!email||!senha){ erro.style.display='block'; erro.textContent='Preencha e-mail e senha.'; return; }
+  try {
+    await signInWithEmailAndPassword(auth, email, senha);
+    // onAuthStateChanged cuida do resto (carregar perfil, empresa e liberar o app)
+  } catch(e) {
+    erro.style.display='block';
+    if(e.code==='auth/invalid-credential'||e.code==='auth/user-not-found'||e.code==='auth/wrong-password')
+      erro.textContent='E-mail ou senha incorretos.';
+    else if(e.code==='auth/too-many-requests')
+      erro.textContent='Muitas tentativas. Aguarde alguns minutos e tente de novo.';
+    else
+      erro.textContent='Não foi possível entrar. Tente novamente.';
   }
-
-  _usuarioLogado = found;
-  sessionStorage.setItem('mt_user', JSON.stringify({id:found.id, usuario:found.usuario, nome:found.nome, perfil:found.perfil, empresa:found.empresa||''}));
-  document.getElementById('login-screen').style.display='none';
-  mostrarHeaderUsuario(found.nome);
-  // Atualiza logo com nome da empresa
-  if(found.empresa) atualizarLogoEmpresa(found.empresa);
-  await init();
 };
 
-window.finalizarSetup = async function() {
-  const empresa  = document.getElementById('setup-empresa').value.trim();
-  const nome     = document.getElementById('setup-nome').value.trim();
-  const usuario  = document.getElementById('setup-usuario').value.trim().toLowerCase();
-  const senha    = document.getElementById('setup-senha').value;
-  const senha2   = document.getElementById('setup-senha2').value;
-  const erro     = document.getElementById('setup-erro');
+window.recuperarSenha = async function() {
+  const email = document.getElementById('login-user').value.trim();
+  const erro  = document.getElementById('login-erro');
+  if(!email) { erro.style.display='block'; erro.textContent='Digite seu e-mail no campo acima e clique em "Esqueci minha senha" de novo.'; return; }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    erro.style.display='block'; erro.style.color='var(--accent)';
+    erro.textContent='Enviamos um link de redefinição para '+email+'. Confira sua caixa de entrada.';
+  } catch(e) {
+    erro.style.display='block'; erro.style.color='var(--red)';
+    erro.textContent='Não encontramos conta com esse e-mail.';
+  }
+};
 
-  // Validações
-  if(!empresa||!nome||!usuario||!senha) { erro.style.display='block'; erro.textContent='Preencha todos os campos!'; return; }
+// "Setup" agora é o cadastro de uma empresa nova (dono/admin) dentro do
+// projeto Firebase único e compartilhado — sem gerar cópia nem projeto novo.
+window.finalizarSetup = async function() {
+  const empresaNome = document.getElementById('setup-empresa').value.trim();
+  const nome         = document.getElementById('setup-nome').value.trim();
+  const email        = document.getElementById('setup-usuario').value.trim();
+  const senha        = document.getElementById('setup-senha').value;
+  const senha2       = document.getElementById('setup-senha2').value;
+  const erro         = document.getElementById('setup-erro');
+  erro.style.display='none';
+
+  if(!empresaNome||!nome||!email||!senha) { erro.style.display='block'; erro.textContent='Preencha todos os campos!'; return; }
   if(senha.length < 6) { erro.style.display='block'; erro.textContent='A senha precisa ter pelo menos 6 caracteres!'; return; }
   if(senha !== senha2) { erro.style.display='block'; erro.textContent='As senhas não coincidem!'; return; }
 
-  // Atualiza o admin no Firebase
-  const snap = await getDocs(collection(db,'mt_usuarios'));
-  const adminDoc = snap.docs.find(d=>d.data().primeiroAcesso===true);
-  if(adminDoc) {
-    await updateDoc(doc(db,'mt_usuarios',adminDoc.id), {
-      nome, usuario, senha, empresa,
-      perfil:'admin', primeiroAcesso: false
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, senha);
+    const uid = cred.user.uid;
+    const agora = new Date().toISOString();
+
+    // 1) Cria a empresa (tenant) — trial de 14 dias, vira bloqueio automático se não virar plano pago
+    const agoraDate = new Date();
+    const trialFim = new Date(agoraDate.getTime() + 14*24*60*60*1000).toISOString();
+    const empresaRef = await addDoc(collection(db,'empresas'), {
+      nome: empresaNome, plano: 'trial', status: 'ativo', trialFim, criadoEm: agora, adminUid: uid
     });
+
+    // 2) Cria o perfil do usuário já vinculado à empresa (companyId)
+    await setDoc(doc(db,'usuarios',uid), {
+      nome, email, perfil: 'admin', companyId: empresaRef.id,
+      permissoes: null, criadoEm: agora
+    });
+
+    showToast('Empresa criada! Bem-vindo ao OperaOs, '+nome+'! 🎉');
+    // onAuthStateChanged detecta o login automático do createUserWithEmailAndPassword
+    // e chama init() sozinho.
+  } catch(e) {
+    erro.style.display='block';
+    if(e.code==='auth/email-already-in-use') erro.textContent='Já existe uma conta com esse e-mail.';
+    else if(e.code==='auth/invalid-email') erro.textContent='E-mail inválido.';
+    else erro.textContent='Não foi possível concluir o cadastro. Tente novamente.';
   }
-
-  // Salva config da empresa
-  try { await addDoc(collection(db,'mt_config'),{empresa, criadoEm: new Date().toISOString()}); } catch(e){}
-
-  // Loga automaticamente
-  _usuarioLogado = {id:adminDoc?.id, usuario, nome, empresa, perfil:'admin'};
-  sessionStorage.setItem('mt_user', JSON.stringify(_usuarioLogado));
-  document.getElementById('setup-screen').style.display='none';
-  mostrarHeaderUsuario(nome);
-  atualizarLogoEmpresa(empresa);
-  showToast('Configuração salva! Bem-vindo ao OperaOs, '+nome+'! 🎉');
-  await init();
 };
 
 window.fazerLogout = function() {
-  sessionStorage.removeItem('mt_user');
-  location.reload();
+  signOut(auth);
 };
 
-// Verifica sessão ao carregar
-const _sessao = sessionStorage.getItem('mt_user');
-if(_sessao) {
-  try {
-    _usuarioLogado = JSON.parse(_sessao);
-    document.getElementById('login-screen').style.display='none';
-    mostrarHeaderUsuario(_usuarioLogado.nome);
-    if(_usuarioLogado.empresa) atualizarLogoEmpresa(_usuarioLogado.empresa);
-    document.addEventListener('DOMContentLoaded', async ()=>{
-      const licenca = await verificarLicenca();
-      if(!licenca.ok) {
-        sessionStorage.removeItem('mt_user');
-        const erro = document.getElementById('login-erro');
-        if(erro) { erro.style.display='block'; erro.textContent=licenca.motivo; }
-        document.getElementById('login-screen').style.display='flex';
-        const tag = document.getElementById('sidebar-footer');
-        if(tag) tag.innerHTML='';
-        return;
-      }
-      init();
-    });
-  } catch(e){ sessionStorage.removeItem('mt_user'); }
-}
+// Fonte única de verdade da sessão: o próprio Firebase Auth.
+// Dispara ao carregar a página (restaura sessão) e a cada login/logout.
+onAuthStateChanged(auth, async (user) => {
+  if(!user) {
+    _usuarioLogado = null; _empresaAtual = null; _isSuperAdmin = false;
+    document.getElementById('login-screen').style.display='flex';
+    document.getElementById('setup-screen').style.display='none';
+    const tag = document.getElementById('sidebar-footer');
+    if(tag) tag.innerHTML='';
+    return;
+  }
+
+  _isSuperAdmin = await verificarSuperAdmin(user.uid);
+  const perfil = await carregarPerfilUsuario(user.uid);
+
+  // Conta de Super Admin "pura", sem empresa vinculada — só abre o painel de gestão.
+  if(!perfil) {
+    if(_isSuperAdmin) {
+      _usuarioLogado = { uid: user.uid, nome: 'Super Admin', email: user.email, perfil: 'superadmin', companyId: null };
+      _empresaAtual = null;
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('setup-screen').style.display='none';
+      mostrarHeaderUsuario('Super Admin');
+      abrirPainelSuperAdminExclusivo();
+      return;
+    }
+    const erro = document.getElementById('login-erro');
+    erro.style.display='block'; erro.textContent='Conta sem empresa vinculada. Fale com o suporte.';
+    await signOut(auth);
+    return;
+  }
+
+  const empresa = await carregarEmpresa(perfil.companyId);
+  if(!empresa) {
+    const erro = document.getElementById('login-erro');
+    erro.style.display='block'; erro.textContent='Empresa não encontrada. Fale com o suporte.';
+    await signOut(auth);
+    return;
+  }
+
+  // Bloqueio automático: trial vencido vira suspensão real, gravada no banco —
+  // não é só um aviso na tela, o Firestore Rules passa a barrar leitura/escrita.
+  if(empresa.plano==='trial' && empresa.status==='ativo' && empresa.trialFim && new Date(empresa.trialFim) < new Date()) {
+    try { await updateDoc(doc(db,'empresas',empresa.id), {status:'trial_expirado'}); } catch(e){}
+    empresa.status = 'trial_expirado';
+  }
+
+  if(empresa.status !== 'ativo' && !_isSuperAdmin) {
+    const erro = document.getElementById('login-erro');
+    erro.style.display='block';
+    erro.textContent = empresa.status==='trial_expirado' ? 'Seu período de teste de 14 dias terminou. Fale com o suporte para assinar um plano.'
+      : empresa.status==='suspenso' ? 'Assinatura suspensa. Fale com o suporte para regularizar.'
+      : 'Acesso bloqueado. Fale com o suporte.';
+    await signOut(auth);
+    return;
+  }
+
+  const licenca = await verificarLicenca();
+  if(!licenca.ok) {
+    const erro = document.getElementById('login-erro');
+    erro.style.display='block'; erro.textContent=licenca.motivo;
+    await signOut(auth);
+    return;
+  }
+
+  _usuarioLogado = perfil;
+  _empresaAtual  = empresa;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('setup-screen').style.display='none';
+  mostrarHeaderUsuario(perfil.nome);
+  atualizarLogoEmpresa(empresa.nome);
+  await init();
+});
 
 // ── MATERIAIS PADRÃO ──
 // Materiais de exemplo — o usuário pode editar, adicionar e remover na aba Materiais
@@ -1456,7 +1564,7 @@ window._modalOrcId = null;
 async function carregarCategorias() {
   window._categoriasExtras = [];
   try {
-    const snap = await getDocs(collection(db,'mt_categorias'));
+    const snap = await getDocs(colEmpresa('mt_categorias'));
     snap.docs.forEach(d=>{
       const nome = d.data().nome;
       if(nome && !window._categoriasExtras.includes(nome)) {
@@ -1484,15 +1592,18 @@ async function init() {
   // Controle de acesso: só admin vê aba Usuários
   const navU = document.getElementById('nav-usuarios');
   if(navU) navU.style.display = (_usuarioLogado?.perfil==='admin')?'':'none';
+  // Super Admin também vê o painel de gestão de empresas, além do próprio sistema
+  const navSA = document.getElementById('nav-superadmin');
+  if(navSA) navSA.style.display = _isSuperAdmin ? '' : 'none';
 }
 
 // ── MATERIAIS ──
 async function carregarMateriais() {
-  const snap = await getDocs(collection(db,'mt_materiais'));
+  const snap = await getDocs(colEmpresa('mt_materiais'));
   if(snap.empty) {
-    // Seed
-    for(const m of MATERIAIS_PADRAO) await addDoc(collection(db,'mt_materiais'),m);
-    const snap2 = await getDocs(collection(db,'mt_materiais'));
+    // Seed — cada empresa nova recebe sua própria cópia dos materiais padrão
+    for(const m of MATERIAIS_PADRAO) await addDoc(collection(db,'mt_materiais'),{...m, companyId: companyId()});
+    const snap2 = await getDocs(colEmpresa('mt_materiais'));
     window._materiais = snap2.docs.map(d=>({id:d.id,...d.data()}));
   } else {
     window._materiais = snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -1602,7 +1713,7 @@ window.adicionarCategoria = async function() {
   const cats = getCategorias();
   if(cats.includes(nome)) { showToast('Categoria "'+nome+'" já existe!'); return; }
   // Salva no Firebase
-  try { await addDoc(collection(db,'mt_categorias'),{nome}); } catch(e){}
+  try { await addDoc(collection(db,'mt_categorias'),{nome, companyId: companyId()}); } catch(e){}
   // Adiciona ao estado local
   window._categoriasExtras = window._categoriasExtras||[];
   window._categoriasExtras.push(nome);
@@ -1644,7 +1755,7 @@ window.removerCategoria = async function(cat) {
   }
   // Remove da coleção orc_categorias no Firebase
   try {
-    const snap = await getDocs(collection(db,'mt_categorias'));
+    const snap = await getDocs(colEmpresa('mt_categorias'));
     for(const d of snap.docs) {
       if(d.data().nome===cat) await deleteDoc(doc(db,'mt_categorias',d.id));
     }
@@ -1679,7 +1790,7 @@ window.salvarNovoMaterial = async function() {
   const unit = document.getElementById('nm-unit').value;
   const custo = parseFloat(document.getElementById('nm-custo').value)||0;
   if(!nome||!custo){showToast('Preencha nome e custo!');return;}
-  const ref = await addDoc(collection(db,'mt_materiais'),{nome,cat:'Outros',unit,custo});
+  const ref = await addDoc(collection(db,'mt_materiais'),{nome,cat:'Outros',unit,custo,companyId:companyId()});
   window._materiais.push({id:ref.id,nome,cat:'Outros',unit,custo});
   renderCatalogo();
   renderTabelaMateriais();
@@ -1695,7 +1806,7 @@ window.salvarNovoMaterialGlobal = async function() {
   let cat     = document.getElementById('g-nm-cat')?.value||'Outros';
   if(cat==='__nova__') { cat = document.getElementById('g-nm-cat-nova').value.trim()||'Outros'; }
   if(!nome||!custo){showToast('Preencha nome e custo!');return;}
-  const ref = await addDoc(collection(db,'mt_materiais'),{nome,cat,unit,custo});
+  const ref = await addDoc(collection(db,'mt_materiais'),{nome,cat,unit,custo,companyId:companyId()});
   window._materiais.push({id:ref.id,nome,cat,unit,custo});
   renderCatalogo();
   renderTabelaMateriais();
@@ -2129,7 +2240,7 @@ window.gerarPDFRelatorio = function() {
 // ── CLIENTES (lê do CRM existente) ──
 async function carregarClientes() {
   try {
-    const snap = await getDocs(collection(db,'clientes'));
+    const snap = await getDocs(colEmpresa('clientes'));
     window._clientes = snap.docs.map(d=>({id:d.id,...d.data()}));
   } catch(e) { window._clientes = []; }
   popularSelectClientes();
@@ -2180,7 +2291,7 @@ window.salvarCliente = async function() {
     if(c) Object.assign(c, dataCliente);
     showToast('Cliente atualizado!');
   } else {
-    const ref = await addDoc(collection(db,'clientes'), dataCliente);
+    const ref = await addDoc(collection(db,'clientes'), {...dataCliente, companyId: companyId()});
     window._clientes.push({id:ref.id, ...dataCliente});
     showToast('Cliente cadastrado!');
   }
@@ -2260,7 +2371,7 @@ window.gerarOrcamentoParaCliente = function(clienteId) {
 
 // ── ORÇAMENTOS ──
 async function carregarOrcamentos() {
-  const snap = await getDocs(collection(db,'mt_orcamentos'));
+  const snap = await getDocs(colEmpresa('mt_orcamentos'));
   window._orcamentos = snap.docs.map(d=>({id:d.id,...d.data()}));
 }
 
@@ -2409,7 +2520,8 @@ window.salvarOrcamento = async function() {
     alteradoEm: null, alteradoPor: null,
     historico: [{ data: agora, usuario: _usuarioLogado?.nome||'Sistema', acao: 'Criado' }],
     mes: new Date().getMonth()+1,
-    ano: new Date().getFullYear()
+    ano: new Date().getFullYear(),
+    companyId: companyId()
   };
   await addDoc(collection(db,'mt_orcamentos'),data);
   window._orcamentos.push({id:'new_'+Date.now(),...data});
@@ -3167,15 +3279,32 @@ window.toggleFormUsuario = function() {
   document.getElementById('form-novo-usuario').classList.toggle('open');
 };
 
+// Cria o login em uma instância secundária e isolada do Firebase — assim o
+// admin que está criando o acesso não perde a própria sessão (limitação
+// conhecida do Firebase Auth ao criar contas a partir do cliente).
 window.criarUsuario = async function() {
   if(!temPermissao('gerenciar_users')) { showToast('Sem permissão!'); return; }
-  const nome    = document.getElementById('nu-nome').value.trim();
-  const usuario = document.getElementById('nu-usuario').value.trim().toLowerCase();
-  const senha   = document.getElementById('nu-senha').value.trim();
-  if(!nome||!usuario||!senha) { showToast('Preencha todos os campos!'); return; }
-  const snap = await getDocs(collection(db,'mt_usuarios'));
-  if(snap.docs.find(d=>d.data().usuario===usuario)) { showToast('Usuário "'+usuario+'" já existe!'); return; }
-  await addDoc(collection(db,'mt_usuarios'),{nome,usuario,senha,perfil:'equipe',permissoes:PERMS_PADRAO});
+  const nome  = document.getElementById('nu-nome').value.trim();
+  const email = document.getElementById('nu-usuario').value.trim();
+  const senha = document.getElementById('nu-senha').value.trim();
+  if(!nome||!email||!senha) { showToast('Preencha todos os campos!'); return; }
+  if(senha.length < 6) { showToast('A senha precisa ter pelo menos 6 caracteres!'); return; }
+
+  const tempApp = initializeApp(firebaseConfig, 'temp-'+Date.now());
+  const tempAuth = getAuth(tempApp);
+  try {
+    const cred = await createUserWithEmailAndPassword(tempAuth, email, senha);
+    await setDoc(doc(db,'usuarios',cred.user.uid), {
+      nome, email, perfil:'equipe', companyId: companyId(),
+      permissoes: PERMS_PADRAO, criadoEm: new Date().toISOString()
+    });
+    await signOut(tempAuth);
+  } catch(e) {
+    showToast(e.code==='auth/email-already-in-use' ? 'Já existe uma conta com esse e-mail.' : 'Não foi possível criar o usuário.');
+    return;
+  } finally {
+    await deleteApp(tempApp);
+  }
   document.getElementById('nu-nome').value='';
   document.getElementById('nu-usuario').value='';
   document.getElementById('nu-senha').value='';
@@ -3184,19 +3313,21 @@ window.criarUsuario = async function() {
   showToast('Usuário "'+nome+'" criado!');
 };
 
-window.deletarUsuario = async function(id, usuario) {
-  if(usuario==='admin') { showToast('O admin não pode ser removido!'); return; }
-  if(!confirm('Remover acesso de "'+usuario+'"?')) return;
-  await deleteDoc(doc(db,'mt_usuarios',id));
+// Remove o acesso ao sistema (apaga o perfil em 'usuarios'). A conta no
+// Firebase Auth em si só é removida via painel do Firebase ou Cloud Function —
+// mas sem o perfil vinculado à empresa, o login é bloqueado imediatamente.
+window.deletarUsuario = async function(id, perfil) {
+  if(perfil==='admin') { showToast('O admin não pode ser removido!'); return; }
+  if(!confirm('Remover o acesso deste usuário?')) return;
+  await deleteDoc(doc(db,'usuarios',id));
   await renderTabelaUsuarios();
-  showToast('Usuário removido.');
+  showToast('Acesso removido.');
 };
 
 window.abrirEdicaoUsuario = function(u) {
   document.getElementById('eu-id').value      = u.id;
   document.getElementById('eu-nome').value    = u.nome;
-  document.getElementById('eu-usuario').value = u.usuario;
-  document.getElementById('eu-senha').value   = '';
+  document.getElementById('eu-usuario').value = u.email;
   const isAdm = u.perfil==='admin';
   const perms = isAdm ? PERMS_ADMIN : (u.permissoes||PERMS_PADRAO);
   document.getElementById('eu-perms-grid').innerHTML = TODAS_PERMISSOES.map(p=>`
@@ -3209,27 +3340,32 @@ window.abrirEdicaoUsuario = function(u) {
   document.getElementById('modal-editar-usuario').classList.add('open');
 };
 
+window.enviarResetSenhaUsuario = async function() {
+  const email = document.getElementById('eu-usuario').value;
+  if(!email) return;
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showToast('Link de redefinição enviado para '+email+'!');
+  } catch(e) {
+    showToast('Não foi possível enviar o link.');
+  }
+};
+
 window.salvarEdicaoUsuario = async function() {
-  const id      = document.getElementById('eu-id').value;
-  const nome    = document.getElementById('eu-nome').value.trim();
-  const usuario = document.getElementById('eu-usuario').value.trim().toLowerCase();
-  const senha   = document.getElementById('eu-senha').value.trim();
-  if(!nome||!usuario) { showToast('Nome e usuário são obrigatórios!'); return; }
-  const snap = await getDocs(collection(db,'mt_usuarios'));
-  const uDoc = snap.docs.find(d=>d.id===id);
-  if(!uDoc) return;
-  const isAdm = uDoc.data().perfil==='admin';
+  const id   = document.getElementById('eu-id').value;
+  const nome = document.getElementById('eu-nome').value.trim();
+  if(!nome) { showToast('Nome é obrigatório!'); return; }
+  const uSnap = await getDoc(doc(db,'usuarios',id));
+  if(!uSnap.exists()) return;
+  const isAdm = uSnap.data().perfil==='admin';
   const permissoes = isAdm ? PERMS_ADMIN : Object.fromEntries(
     TODAS_PERMISSOES.map(p=>[p.key, document.getElementById('perm-'+p.key)?.checked||false])
   );
-  const updates = {nome, usuario, permissoes};
-  if(senha) updates.senha = senha;
-  await updateDoc(doc(db,'mt_usuarios',id), updates);
-  if(_usuarioLogado && _usuarioLogado.usuario === uDoc.data().usuario) {
+  await updateDoc(doc(db,'usuarios',id), {nome, permissoes});
+  if(_usuarioLogado && _usuarioLogado.uid === id) {
     _usuarioLogado.nome = nome;
     _usuarioLogado.permissoes = permissoes;
-    sessionStorage.setItem('mt_user', JSON.stringify(_usuarioLogado));
-    document.querySelectorAll('.header span').forEach(s=>{ if(s.textContent===uDoc.data().nome) s.textContent=nome; });
+    document.querySelectorAll('.sidebar-user').forEach(s=>s.textContent=nome);
   }
   document.getElementById('modal-editar-usuario').classList.remove('open');
   await renderTabelaUsuarios();
@@ -3237,7 +3373,7 @@ window.salvarEdicaoUsuario = async function() {
 };
 
 async function renderTabelaUsuarios() {
-  const snap = await getDocs(collection(db,'mt_usuarios'));
+  const snap = await getDocs(colEmpresa('usuarios'));
   const usuarios = snap.docs.map(d=>({id:d.id,...d.data()}));
   const isAdmin  = _usuarioLogado?.perfil==='admin';
   const tb = document.getElementById('usuarios-tbody');
@@ -3247,17 +3383,16 @@ async function renderTabelaUsuarios() {
     const ativas = TODAS_PERMISSOES.filter(p=>perms[p.key]);
     const tags   = ativas.slice(0,3).map(p=>`<span style="display:inline-block;font-size:10px;background:rgba(26,95,168,0.1);color:var(--blue);border-radius:4px;padding:2px 6px;margin:1px">${p.label}</span>`).join('');
     const mais   = ativas.length>3?`<span style="font-size:10px;color:var(--muted)">+${ativas.length-3}</span>`:'';
-    const uJson  = encodeURIComponent(JSON.stringify({id:u.id,nome:u.nome,usuario:u.usuario,perfil:u.perfil,permissoes:u.permissoes||PERMS_PADRAO}));
+    const uJson  = encodeURIComponent(JSON.stringify({id:u.id,nome:u.nome,email:u.email,perfil:u.perfil,permissoes:u.permissoes||PERMS_PADRAO}));
     return `<tr>
       <td style="font-weight:600">${u.nome}</td>
-      <td><code style="background:var(--bg3);padding:2px 8px;border-radius:4px;font-size:12px">${u.usuario}</code></td>
-      <td><span style="background:var(--bg3);padding:2px 8px;border-radius:4px;font-size:12px">${isAdmin?u.senha:'••••••'}</span></td>
+      <td><code style="background:var(--bg3);padding:2px 8px;border-radius:4px;font-size:12px">${u.email}</code></td>
       <td><span class="badge ${u.perfil==='admin'?'badge-amber':'badge-blue'}">${u.perfil==='admin'?'Admin':'Equipe'}</span></td>
       <td style="max-width:220px">${tags}${mais}</td>
       <td style="display:flex;gap:6px;flex-wrap:wrap">
         ${isAdmin?`
           <button class="btn-ghost" style="padding:5px 10px;font-size:10px" onclick='abrirEdicaoUsuario(JSON.parse(decodeURIComponent("${uJson}")))'>Editar</button>
-          ${u.usuario!=='admin'?`<button class="btn-ghost" style="padding:5px 10px;font-size:10px;color:var(--red);border-color:var(--red)" onclick="deletarUsuario('${u.id}','${u.usuario}')">Remover</button>`:''}
+          ${u.perfil!=='admin'?`<button class="btn-ghost" style="padding:5px 10px;font-size:10px;color:var(--red);border-color:var(--red)" onclick="deletarUsuario('${u.id}','${u.perfil}')">Remover</button>`:''}
         `:'<span style="font-size:12px;color:var(--muted)">—</span>'}
       </td>
     </tr>`;
@@ -3286,7 +3421,94 @@ window.showScreen = function(name,btn) {
   if(name==='lista') renderListaOrcamentos();
   if(name==='usuarios') renderTabelaUsuarios();
   if(name==='clientes') renderTabelaClientes();
+  if(name==='superadmin') renderPainelSuperAdmin();
   if(name==='materiais') { renderFiltrosCategorias(); renderListaCategorias(); popularSelectCategorias('g-nm-cat'); }
+};
+
+// ── SUPER ADMIN ──
+// Só chega aqui quem tem doc em 'superadmins/{uid}' — as regras do Firestore
+// são a barreira real; isto aqui é só a interface.
+window._todasEmpresas = [];
+
+// Sessão de Super Admin "pura" (sem empresa própria vinculada): esconde todo
+// o resto do sistema e deixa só o painel de gestão de empresas visível.
+function abrirPainelSuperAdminExclusivo() {
+  document.querySelectorAll('.side-btn').forEach(b=>b.style.display='none');
+  const navSA = document.getElementById('nav-superadmin');
+  if(navSA) navSA.style.display='';
+  showScreen('superadmin', navSA);
+}
+
+async function carregarTodasEmpresas() {
+  const snap = await getDocs(collection(db,'empresas'));
+  return snap.docs.map(d=>({id:d.id,...d.data()}));
+}
+
+function badgeStatusEmpresa(status) {
+  if(status==='ativo') return '<span class="badge badge-green">Ativo</span>';
+  if(status==='trial_expirado') return '<span class="badge badge-amber">Trial expirado</span>';
+  return '<span class="badge badge-red">Suspenso</span>';
+}
+
+async function renderPainelSuperAdmin() {
+  const tb = document.getElementById('superadmin-tbody');
+  if(!tb) return;
+  tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Carregando...</td></tr>';
+  window._todasEmpresas = await carregarTodasEmpresas();
+  desenharTabelaSuperAdmin(window._todasEmpresas);
+}
+
+function desenharTabelaSuperAdmin(lista) {
+  const tb = document.getElementById('superadmin-tbody');
+  if(!tb) return;
+  const ordenada = [...lista].sort((a,b)=>(a.nome||'').toLowerCase().localeCompare((b.nome||'').toLowerCase(),'pt-BR'));
+  if(!ordenada.length) { tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Nenhuma empresa cadastrada.</td></tr>'; return; }
+  tb.innerHTML = ordenada.map(e=>{
+    const criada = e.criadoEm ? new Date(e.criadoEm).toLocaleDateString('pt-BR') : '—';
+    const planoLabel = {trial:'Trial', basico:'Básico', pro:'Pro'}[e.plano] || e.plano || '—';
+    return `<tr>
+      <td style="font-weight:600">${e.nome||'—'}</td>
+      <td>
+        <select onchange="mudarPlanoEmpresa('${e.id}', this.value)" style="font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid var(--border)">
+          <option value="trial" ${e.plano==='trial'?'selected':''}>Trial</option>
+          <option value="basico" ${e.plano==='basico'?'selected':''}>Básico</option>
+          <option value="pro" ${e.plano==='pro'?'selected':''}>Pro</option>
+        </select>
+      </td>
+      <td>${badgeStatusEmpresa(e.status)}</td>
+      <td style="font-size:12px;color:var(--muted)">${criada}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">
+        ${e.status==='ativo'
+          ? `<button class="btn-ghost" style="padding:5px 10px;font-size:10px;color:var(--red);border-color:var(--red)" onclick="mudarStatusEmpresa('${e.id}','suspenso')">Suspender</button>`
+          : `<button class="btn-ghost" style="padding:5px 10px;font-size:10px;color:var(--green);border-color:var(--green)" onclick="mudarStatusEmpresa('${e.id}','ativo')">Reativar</button>`}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+window.filtrarEmpresasSuperAdmin = function() {
+  const termo = (document.getElementById('superadmin-search-input')?.value||'').toLowerCase();
+  const filtradas = window._todasEmpresas.filter(e=>(e.nome||'').toLowerCase().includes(termo));
+  desenharTabelaSuperAdmin(filtradas);
+};
+
+window.mudarStatusEmpresa = async function(empresaId, novoStatus) {
+  const msg = novoStatus==='suspenso' ? 'Suspender esta empresa? Ela perde acesso ao sistema imediatamente.' : 'Reativar esta empresa?';
+  if(!confirm(msg)) return;
+  try {
+    await updateDoc(doc(db,'empresas',empresaId), {status: novoStatus});
+    showToast(novoStatus==='suspenso' ? 'Empresa suspensa.' : 'Empresa reativada.');
+    await renderPainelSuperAdmin();
+  } catch(e) { showToast('Não foi possível atualizar. Tente de novo.'); }
+};
+
+window.mudarPlanoEmpresa = async function(empresaId, novoPlano) {
+  try {
+    await updateDoc(doc(db,'empresas',empresaId), {plano: novoPlano});
+    showToast('Plano atualizado.');
+    const e = window._todasEmpresas.find(x=>x.id===empresaId);
+    if(e) e.plano = novoPlano;
+  } catch(e) { showToast('Não foi possível atualizar o plano.'); }
 };
 
 // ── PWA INSTALL BANNER (iOS + Android) ──
