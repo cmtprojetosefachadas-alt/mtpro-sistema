@@ -1482,6 +1482,7 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
+  try {
   _isSuperAdmin = await verificarSuperAdmin(user.uid);
   const perfil = await carregarPerfilUsuario(user.uid);
 
@@ -1542,6 +1543,15 @@ onAuthStateChanged(auth, async (user) => {
   mostrarHeaderUsuario(perfil.nome);
   atualizarLogoEmpresa(empresa.nome);
   await init();
+  } catch(e) {
+    // Nunca mais falha em silêncio: qualquer erro (ex: regra do Firestore
+    // bloqueando alguma leitura) aparece na tela com o motivo real.
+    console.error('Erro ao carregar sessão:', e);
+    const erro = document.getElementById('login-erro');
+    if(erro) { erro.style.display='block'; erro.textContent = 'Erro ao carregar sua conta: '+(e.code||e.message||'desconhecido'); }
+    document.getElementById('login-screen').style.display='flex';
+    try { await signOut(auth); } catch(e2){}
+  }
 });
 
 // ── MATERIAIS PADRÃO ──
