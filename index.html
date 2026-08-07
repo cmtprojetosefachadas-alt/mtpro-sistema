@@ -991,6 +991,55 @@ body {
     </div>
   </div>
 </div>
+
+<!-- MODAL PDF PARA O CLIENTE (via limpa, sem custo/lucro) -->
+<div class="modal-overlay" id="modal-pdf-cliente" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:520px">
+    <h3>Via do cliente — gerar PDF</h3>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Documento limpo para enviar ao cliente — sem custos nem margem de lucro. Confira os dados antes de gerar.</div>
+    <input type="hidden" id="pdfc-id">
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label">Data</label>
+        <input class="field" id="pdfc-data" type="date">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Cliente</label>
+        <input class="field" id="pdfc-cliente" readonly style="opacity:.7">
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Nome do serviço</label>
+      <input class="field" id="pdfc-servico" placeholder="Ex: Fachada ACM — loja unidade centro">
+    </div>
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label">Valor de venda (R$)</label>
+        <input class="field" id="pdfc-valor" type="number" step="0.01">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Forma de pagamento</label>
+        <select class="field" id="pdfc-pagamento">
+          <option value="dinheiro">Dinheiro / PIX</option>
+          <option value="boleto">Boleto</option>
+          <option value="cartao_debito">Cartão débito</option>
+          <option value="cartao_credito">Cartão crédito</option>
+          <option value="cheque">Cheque</option>
+          <option value="transferencia">Transferência</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Observações (condições, prazo, garantia...)</label>
+      <textarea class="field" id="pdfc-obs" rows="3" placeholder="Ex: Entrada de 50% + 50% na entrega. Prazo de instalação: 7 dias úteis."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" style="flex:1" onclick="gerarPDFCliente()">🧾 Gerar PDF</button>
+      <button class="btn btn-secondary" style="flex:1" onclick="document.getElementById('modal-pdf-cliente').classList.remove('open')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <div id="install-banner" style="
   display:none;position:fixed;bottom:0;left:0;right:0;z-index:10000;
   background:var(--header);padding:14px 20px;
@@ -1110,7 +1159,7 @@ body {
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy }
+import { getFirestore, collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, onSnapshot, query, orderBy }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -1125,10 +1174,66 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// ── LICENÇA (controle de acesso do revendedor) ──
+// LICENSE_ENABLED e os campos abaixo são preenchidos automaticamente pelo
+// Gerador OperaOS. Nesta cópia (sem passar pelo gerador) fica desligado,
+// então o sistema roda normalmente sem checagem nenhuma.
+const LICENSE_ENABLED = false;
+const LICENSE_CONFIG = {
+  apiKey: "LICENSE_API_KEY",
+  authDomain: "LICENSE_AUTH_DOMAIN",
+  projectId: "LICENSE_PROJECT_ID",
+  storageBucket: "LICENSE_STORAGE_BUCKET",
+  messagingSenderId: "LICENSE_SENDER_ID",
+  appId: "LICENSE_APP_ID"
+};
+const CLIENT_LICENSE_ID = "LICENSE_CLIENT_ID";
+
+let licenseDb = null;
+if (LICENSE_ENABLED) {
+  try {
+    const licenseApp = initializeApp(LICENSE_CONFIG, "license");
+    licenseDb = getFirestore(licenseApp);
+  } catch(e) {}
+}
+
+async function verificarLicenca() {
+  if (!licenseDb) return { ok:true };
+  try {
+    const ref = doc(licenseDb, 'licencas', CLIENT_LICENSE_ID);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return { ok:false, motivo:'Licença não encontrada. Fale com o suporte.' };
+    const d = snap.data();
+    const hoje = new Date();
+    const venceu = d.vencimento ? new Date(d.vencimento) < hoje : false;
+    if (d.status === 'bloqueado') return { ok:false, motivo:'Acesso bloqueado. Fale com o suporte para regularizar.' };
+    if (d.status === 'teste' && venceu) return { ok:false, motivo:'Período de teste encerrado. Fale com o suporte para ativar.' };
+    if (d.status === 'ativo' && venceu) return { ok:false, motivo:'Assinatura vencida. Fale com o suporte para renovar.' };
+    return { ok:true };
+  } catch(e) {
+    // Falha de rede/permissão não trava o cliente — evita ficar refém de conexão
+    return { ok:true };
+  }
+}
+
+// Reforça a licença enquanto o app está aberto (não só no login/refresh),
+// pra um bloqueio feito pelo revendedor derrubar a sessão em poucos minutos.
+if (typeof window !== 'undefined') {
+  setInterval(async () => {
+    if (!licenseDb || !_usuarioLogado) return;
+    const licenca = await verificarLicenca();
+    if (!licenca.ok) {
+      sessionStorage.removeItem('mt_user');
+      alert(licenca.motivo);
+      location.reload();
+    }
+  }, 120000); // a cada 2 minutos
+}
+
 // ── USUÁRIOS INTERNOS ──
 // Senha padrão inicial: cada usuário pode ser criado pelo admin
 const USUARIOS_PADRAO = [
-  { usuario: 'admin', senha: 'ADMIN3920', nome: 'Administrador', perfil: 'admin', primeiroAcesso: true },
+  { usuario: 'admin', senha: 'ADMIN', nome: 'Administrador', perfil: 'admin', primeiroAcesso: true },
 ];
 
 let _usuarioLogado = null;
@@ -1203,6 +1308,9 @@ window.fazerLogin = async function() {
   const found = usuarios.find(u => u.usuario===usuario && u.senha===senha);
   if(!found) { erro.style.display='block'; erro.textContent='Usuário ou senha incorretos.'; return; }
 
+  const licenca = await verificarLicenca();
+  if(!licenca.ok) { erro.style.display='block'; erro.textContent=licenca.motivo; return; }
+
   // Verifica se é primeiro acesso
   if(found.primeiroAcesso) {
     _usuarioLogado = found;
@@ -1270,7 +1378,19 @@ if(_sessao) {
     document.getElementById('login-screen').style.display='none';
     mostrarHeaderUsuario(_usuarioLogado.nome);
     if(_usuarioLogado.empresa) atualizarLogoEmpresa(_usuarioLogado.empresa);
-    document.addEventListener('DOMContentLoaded', ()=>init());
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      const licenca = await verificarLicenca();
+      if(!licenca.ok) {
+        sessionStorage.removeItem('mt_user');
+        const erro = document.getElementById('login-erro');
+        if(erro) { erro.style.display='block'; erro.textContent=licenca.motivo; }
+        document.getElementById('login-screen').style.display='flex';
+        const tag = document.getElementById('sidebar-footer');
+        if(tag) tag.innerHTML='';
+        return;
+      }
+      init();
+    });
   } catch(e){ sessionStorage.removeItem('mt_user'); }
 }
 
@@ -1608,6 +1728,113 @@ window.salvarEdicaoMaterial = async function() {
 };
 
 // ── GERAR PDF ORÇAMENTO INDIVIDUAL ──
+// ── PDF PARA O CLIENTE (via limpa, sem custo/margem/lucro) ──
+window.abrirPdfCliente = function(id) {
+  const o = window._orcamentos.find(x=>x.id===id);
+  if(!o) return;
+  document.getElementById('pdfc-id').value = id;
+  document.getElementById('pdfc-data').value = new Date().toISOString().slice(0,10);
+  document.getElementById('pdfc-cliente').value = o.cliente||'';
+  document.getElementById('pdfc-servico').value = o.desc||'';
+  document.getElementById('pdfc-valor').value = Math.round((o.venda||0)*100)/100;
+  document.getElementById('pdfc-pagamento').value = o.pagamento||'dinheiro';
+  document.getElementById('pdfc-obs').value = '';
+  document.getElementById('modal-pdf-cliente').classList.add('open');
+};
+
+window.gerarPDFCliente = function() {
+  const id = document.getElementById('pdfc-id').value;
+  const o  = window._orcamentos.find(x=>x.id===id);
+  if(!o) return;
+  const data      = document.getElementById('pdfc-data').value;
+  const cliente   = document.getElementById('pdfc-cliente').value;
+  const servico   = document.getElementById('pdfc-servico').value.trim() || 'Serviço';
+  const valor     = parseFloat(document.getElementById('pdfc-valor').value)||0;
+  const pagamento = document.getElementById('pdfc-pagamento').value;
+  const obs       = document.getElementById('pdfc-obs').value.trim();
+  const pagLabels = {'dinheiro':'Dinheiro / PIX','boleto':'Boleto','cartao_debito':'Cartão débito','cartao_credito':'Cartão crédito','cheque':'Cheque','transferencia':'Transferência'};
+  const pagLabel  = pagLabels[pagamento]||pagamento;
+
+  const itensHTML = (o.itens||[]).map(i=>`
+    <tr>
+      <td>${i.nome}</td>
+      <td style="text-align:center">${i.qty} ${i.unit}</td>
+    </tr>
+  `).join('');
+
+  const fmtR = v => 'R$ '+(Math.round((v||0)*100)/100).toLocaleString('pt-BR',{minimumFractionDigits:2});
+  const dataFmt = data ? new Date(data+'T00:00:00').toLocaleDateString('pt-BR') : new Date().toLocaleDateString('pt-BR');
+  const obsEsc = obs.replace(/</g,'&lt;');
+
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8">
+  <title>Orçamento — ${cliente}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,sans-serif;color:#1a1a1a;padding:44px;font-size:13px;background:#fff}
+    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;padding-bottom:20px;border-bottom:3px solid #e8520a}
+    .logo{font-size:26px;font-weight:900;color:#1a2332}.logo span{color:#e8520a}
+    .sub{font-size:12px;color:#888;margin-top:4px}
+    .data{text-align:right;font-size:12px;color:#888}
+    .titulo{font-size:20px;font-weight:800;color:#1a2332;margin:28px 0 6px}
+    .cliente-block{background:#f8f7f4;border-radius:10px;padding:16px 20px;margin-bottom:24px}
+    .cliente-block .label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+    .cliente-block .val{font-size:15px;font-weight:700;color:#1a1a1a}
+    h2{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#1a2332;margin:24px 0 12px;padding-bottom:6px;border-bottom:1px solid #eee}
+    table{width:100%;border-collapse:collapse;margin-bottom:8px}
+    th{text-align:left;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.06em;padding:8px 12px;border-bottom:2px solid #eee;background:#f8f7f4}
+    td{padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:13px}
+    tr:last-child td{border-bottom:none}
+    .total-box{background:linear-gradient(135deg,#fff3ea,#fff8f2);border:1px solid #f4d3bb;border-radius:10px;padding:20px;margin:24px 0;display:flex;justify-content:space-between;align-items:center}
+    .total-box .label{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em}
+    .total-box .val{font-size:30px;font-weight:800;color:#e8520a}
+    .obs-block{background:#f8f7f4;border-radius:10px;padding:16px 20px;margin-top:8px;font-size:12.5px;color:#444;line-height:1.6;white-space:pre-wrap}
+    .footer{margin-top:40px;padding-top:16px;border-top:1px solid #eee;font-size:11px;color:#aaa;text-align:center}
+    @media print{body{padding:24px}button{display:none!important}}
+  </style>
+  </head><body>
+
+  <div class="header">
+    <div>
+      <div class="logo">Opera<span>Os</span></div>
+      <div class="sub">Comunicação visual e fachadas comerciais</div>
+    </div>
+    <div class="data">Data: ${dataFmt}</div>
+  </div>
+
+  <div class="titulo">${servico}</div>
+
+  <div class="cliente-block">
+    <div class="label">Cliente</div>
+    <div class="val">${cliente}</div>
+  </div>
+
+  ${itensHTML ? `<h2>Itens inclusos</h2>
+  <table>
+    <thead><tr><th>Material / Serviço</th><th style="text-align:center">Qtd</th></tr></thead>
+    <tbody>${itensHTML}</tbody>
+  </table>` : ''}
+
+  <div class="total-box">
+    <span class="label">Valor total</span>
+    <span class="val">${fmtR(valor)}</span>
+  </div>
+
+  <div style="font-size:12px;color:#666;margin-bottom:4px"><strong>Forma de pagamento:</strong> ${pagLabel}</div>
+  ${obs ? `<div class="obs-block">${obsEsc}</div>` : ''}
+
+  <div class="footer">Orçamento válido por 15 dias a partir da data de emissão.</div>
+
+  <script>window.onload=()=>window.print()<\/script>
+  </body></html>`;
+
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+
+  document.getElementById('modal-pdf-cliente').classList.remove('open');
+};
+
 window.gerarPDFOrcamento = function(id) {
   const o = window._orcamentos.find(x=>x.id===id);
   if(!o) return;
@@ -2407,7 +2634,8 @@ window.abrirModal = function(id) {
     <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
       <div style="font-size:12px;color:var(--muted)">Status: <span class="badge ${badgeClass(o.status)}">${o.status}</span></div>
       <div style="display:flex;gap:8px">
-        <button class="btn-ghost" style="font-size:11px;padding:5px 12px" onclick="gerarPDFOrcamento('${id}')">📄 PDF</button>
+        <button class="btn-ghost" style="font-size:11px;padding:5px 12px" onclick="abrirPdfCliente('${id}')">🧾 Via do cliente</button>
+        <button class="btn-ghost" style="font-size:11px;padding:5px 12px" onclick="gerarPDFOrcamento('${id}')">📄 PDF interno</button>
         <button class="btn-ghost" style="font-size:11px;padding:5px 12px" onclick="abrirEdicaoOrcamento('${id}')">✏️ Editar itens</button>
       </div>
     </div>
