@@ -1334,7 +1334,7 @@ async function verificarSuperAdmin(uid) {
   try {
     const snap = await getDoc(doc(db,'superadmins',uid));
     return snap.exists();
-  } catch(e) { return false; }
+  } catch(e) { console.error('verificarSuperAdmin falhou:', e.code||e.message||e); return false; }
 }
 
 function mostrarHeaderUsuario(nome) {
