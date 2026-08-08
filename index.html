@@ -819,7 +819,7 @@ body {
     <div class="orc-table-wrap">
       <table>
         <thead>
-          <tr><th>Empresa</th><th>Plano</th><th>Status</th><th>Criada em</th><th>Ações</th></tr>
+          <tr><th>Empresa</th><th>Plano</th><th>Status</th><th>Vencimento</th><th>Criada em</th><th>Ações</th></tr>
         </thead>
         <tbody id="superadmin-tbody"></tbody>
       </table>
@@ -1333,12 +1333,8 @@ async function carregarEmpresa(id) {
 async function verificarSuperAdmin(uid) {
   try {
     const snap = await getDoc(doc(db,'superadmins',uid));
-    window._debugSuperAdmin = 'ok, existe='+snap.exists();
     return snap.exists();
-  } catch(e) {
-    window._debugSuperAdmin = 'ERRO: '+(e.code||e.message||e);
-    return false;
-  }
+  } catch(e) { return false; }
 }
 
 function mostrarHeaderUsuario(nome) {
@@ -1450,7 +1446,7 @@ window.finalizarSetup = async function() {
     const agoraDate = new Date();
     const trialFim = new Date(agoraDate.getTime() + 14*24*60*60*1000).toISOString();
     const empresaRef = await addDoc(collection(db,'empresas'), {
-      nome: empresaNome, plano: 'trial', status: 'ativo', trialFim, criadoEm: agora, adminUid: uid
+      nome: empresaNome, plano: 'trial', status: 'ativo', vencimento: trialFim, criadoEm: agora, adminUid: uid
     });
 
     // 2) Cria o perfil do usuário já vinculado à empresa (companyId)
@@ -1489,12 +1485,6 @@ onAuthStateChanged(auth, async (user) => {
   try {
   window._etapaLogin = 'verificarSuperAdmin';
   _isSuperAdmin = await verificarSuperAdmin(user.uid);
-  let listaDebug = 'erro ao listar';
-  try {
-    const snapAll = await getDocs(collection(db,'superadmins'));
-    listaDebug = snapAll.empty ? 'vazia' : snapAll.docs.map(d=>'['+d.id+']').join(',');
-  } catch(e) { listaDebug = 'erro: '+(e.code||e.message||e); }
-  showToast('Docs em superadmins: '+listaDebug+' | Meu UID: ['+user.uid+']', 10000);
   window._etapaLogin = 'carregarPerfilUsuario';
   const perfil = await carregarPerfilUsuario(user.uid);
 
@@ -1524,17 +1514,20 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  // Bloqueio automático: trial vencido vira suspensão real, gravada no banco —
-  // não é só um aviso na tela, o Firestore Rules passa a barrar leitura/escrita.
-  if(empresa.plano==='trial' && empresa.status==='ativo' && empresa.trialFim && new Date(empresa.trialFim) < new Date()) {
-    try { await updateDoc(doc(db,'empresas',empresa.id), {status:'trial_expirado'}); } catch(e){}
-    empresa.status = 'trial_expirado';
+  // Bloqueio automático: vencimento passou (trial OU plano pago sem renovação)
+  // vira suspensão real, gravada no banco — não é só aviso na tela, o
+  // Firestore Rules passa a barrar leitura/escrita de verdade.
+  if(empresa.status==='ativo' && empresa.vencimento && new Date(empresa.vencimento) < new Date()) {
+    const novoStatus = empresa.plano==='trial' ? 'trial_expirado' : 'vencido';
+    try { await updateDoc(doc(db,'empresas',empresa.id), {status:novoStatus}); } catch(e){}
+    empresa.status = novoStatus;
   }
 
   if(empresa.status !== 'ativo' && !_isSuperAdmin) {
     const erro = document.getElementById('login-erro');
     erro.style.display='block';
     erro.textContent = empresa.status==='trial_expirado' ? 'Seu período de teste de 14 dias terminou. Fale com o suporte para assinar um plano.'
+      : empresa.status==='vencido' ? 'Sua assinatura venceu. Fale com o suporte para renovar.'
       : empresa.status==='suspenso' ? 'Assinatura suspensa. Fale com o suporte para regularizar.'
       : 'Acesso bloqueado. Fale com o suporte.';
     await signOut(auth);
@@ -3470,6 +3463,7 @@ async function carregarTodasEmpresas() {
 function badgeStatusEmpresa(status) {
   if(status==='ativo') return '<span class="badge badge-green">Ativo</span>';
   if(status==='trial_expirado') return '<span class="badge badge-amber">Trial expirado</span>';
+  if(status==='vencido') return '<span class="badge badge-amber">Vencido</span>';
   return '<span class="badge badge-red">Suspenso</span>';
 }
 
@@ -3485,10 +3479,13 @@ function desenharTabelaSuperAdmin(lista) {
   const tb = document.getElementById('superadmin-tbody');
   if(!tb) return;
   const ordenada = [...lista].sort((a,b)=>(a.nome||'').toLowerCase().localeCompare((b.nome||'').toLowerCase(),'pt-BR'));
-  if(!ordenada.length) { tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Nenhuma empresa cadastrada.</td></tr>'; return; }
+  if(!ordenada.length) { tb.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Nenhuma empresa cadastrada.</td></tr>'; return; }
+  const hoje = new Date();
   tb.innerHTML = ordenada.map(e=>{
     const criada = e.criadoEm ? new Date(e.criadoEm).toLocaleDateString('pt-BR') : '—';
-    const planoLabel = {trial:'Trial', basico:'Básico', pro:'Pro'}[e.plano] || e.plano || '—';
+    const venc = e.vencimento ? new Date(e.vencimento) : null;
+    const vencStr = venc ? venc.toLocaleDateString('pt-BR') : '—';
+    const vencendo = venc && venc > hoje && (venc - hoje) < 3*24*60*60*1000; // vence em <72h
     return `<tr>
       <td style="font-weight:600">${e.nome||'—'}</td>
       <td>
@@ -3499,8 +3496,10 @@ function desenharTabelaSuperAdmin(lista) {
         </select>
       </td>
       <td>${badgeStatusEmpresa(e.status)}</td>
+      <td style="font-size:12px;color:${vencendo?'var(--accent)':'var(--muted)'};font-weight:${vencendo?'700':'400'}">${vencStr}</td>
       <td style="font-size:12px;color:var(--muted)">${criada}</td>
       <td style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn-ghost" style="padding:5px 10px;font-size:10px;color:var(--blue);border-color:var(--blue)" onclick="renovarEmpresa('${e.id}')">Renovar +30 dias</button>
         ${e.status==='ativo'
           ? `<button class="btn-ghost" style="padding:5px 10px;font-size:10px;color:var(--red);border-color:var(--red)" onclick="mudarStatusEmpresa('${e.id}','suspenso')">Suspender</button>`
           : `<button class="btn-ghost" style="padding:5px 10px;font-size:10px;color:var(--green);border-color:var(--green)" onclick="mudarStatusEmpresa('${e.id}','ativo')">Reativar</button>`}
@@ -3525,13 +3524,31 @@ window.mudarStatusEmpresa = async function(empresaId, novoStatus) {
   } catch(e) { showToast('Não foi possível atualizar. Tente de novo.'); }
 };
 
+// Trocar o plano já define uma nova validade de 30 dias e reativa a empresa —
+// é o "marcar como pago" na prática. Pra só mudar o rótulo sem mexer na data,
+// use a mesma opção que já estava selecionada.
 window.mudarPlanoEmpresa = async function(empresaId, novoPlano) {
   try {
-    await updateDoc(doc(db,'empresas',empresaId), {plano: novoPlano});
-    showToast('Plano atualizado.');
-    const e = window._todasEmpresas.find(x=>x.id===empresaId);
-    if(e) e.plano = novoPlano;
+    const dias = novoPlano==='trial' ? 14 : 30;
+    const novoVencimento = new Date(Date.now() + dias*24*60*60*1000).toISOString();
+    await updateDoc(doc(db,'empresas',empresaId), {plano: novoPlano, status: 'ativo', vencimento: novoVencimento});
+    showToast('Plano atualizado — válido até '+new Date(novoVencimento).toLocaleDateString('pt-BR')+'.');
+    await renderPainelSuperAdmin();
   } catch(e) { showToast('Não foi possível atualizar o plano.'); }
+};
+
+// Estende o vencimento em 30 dias a partir de hoje (ou da data atual de
+// vencimento, se ela ainda não passou) e reativa a empresa. É o botão pra usar
+// depois que o cliente pagou, sem precisar mexer no plano.
+window.renovarEmpresa = async function(empresaId) {
+  const e = window._todasEmpresas.find(x=>x.id===empresaId);
+  const base = (e?.vencimento && new Date(e.vencimento) > new Date()) ? new Date(e.vencimento) : new Date();
+  const novoVencimento = new Date(base.getTime() + 30*24*60*60*1000).toISOString();
+  try {
+    await updateDoc(doc(db,'empresas',empresaId), {status: 'ativo', vencimento: novoVencimento});
+    showToast('Renovado até '+new Date(novoVencimento).toLocaleDateString('pt-BR')+'.');
+    await renderPainelSuperAdmin();
+  } catch(e2) { showToast('Não foi possível renovar. Tente de novo.'); }
 };
 
 // ── PWA INSTALL BANNER (iOS + Android) ──
