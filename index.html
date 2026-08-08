@@ -1489,7 +1489,12 @@ onAuthStateChanged(auth, async (user) => {
   try {
   window._etapaLogin = 'verificarSuperAdmin';
   _isSuperAdmin = await verificarSuperAdmin(user.uid);
-  showToast('UID completo: ['+user.uid+'] len='+user.uid.length, 8000);
+  let listaDebug = 'erro ao listar';
+  try {
+    const snapAll = await getDocs(collection(db,'superadmins'));
+    listaDebug = snapAll.empty ? 'vazia' : snapAll.docs.map(d=>'['+d.id+']').join(',');
+  } catch(e) { listaDebug = 'erro: '+(e.code||e.message||e); }
+  showToast('Docs em superadmins: '+listaDebug+' | Meu UID: ['+user.uid+']', 10000);
   window._etapaLogin = 'carregarPerfilUsuario';
   const perfil = await carregarPerfilUsuario(user.uid);
 
