@@ -1485,6 +1485,7 @@ onAuthStateChanged(auth, async (user) => {
   try {
   window._etapaLogin = 'verificarSuperAdmin';
   _isSuperAdmin = await verificarSuperAdmin(user.uid);
+  showToast('DEBUG — Super Admin: '+_isSuperAdmin+' | UID: '+user.uid.slice(0,10));
   window._etapaLogin = 'carregarPerfilUsuario';
   const perfil = await carregarPerfilUsuario(user.uid);
 
