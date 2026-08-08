@@ -1442,9 +1442,9 @@ window.finalizarSetup = async function() {
     const uid = cred.user.uid;
     const agora = new Date().toISOString();
 
-    // 1) Cria a empresa (tenant) — trial de 14 dias, vira bloqueio automático se não virar plano pago
+    // 1) Cria a empresa (tenant) — trial de 7 dias, vira bloqueio automático se não virar plano pago
     const agoraDate = new Date();
-    const trialFim = new Date(agoraDate.getTime() + 14*24*60*60*1000).toISOString();
+    const trialFim = new Date(agoraDate.getTime() + 7*24*60*60*1000).toISOString();
     const empresaRef = await addDoc(collection(db,'empresas'), {
       nome: empresaNome, plano: 'trial', status: 'ativo', vencimento: trialFim, criadoEm: agora, adminUid: uid
     });
@@ -1526,7 +1526,7 @@ onAuthStateChanged(auth, async (user) => {
   if(empresa.status !== 'ativo' && !_isSuperAdmin) {
     const erro = document.getElementById('login-erro');
     erro.style.display='block';
-    erro.textContent = empresa.status==='trial_expirado' ? 'Seu período de teste de 14 dias terminou. Fale com o suporte para assinar um plano.'
+    erro.textContent = empresa.status==='trial_expirado' ? 'Seu período de teste de 7 dias terminou. Fale com o suporte para assinar um plano.'
       : empresa.status==='vencido' ? 'Sua assinatura venceu. Fale com o suporte para renovar.'
       : empresa.status==='suspenso' ? 'Assinatura suspensa. Fale com o suporte para regularizar.'
       : 'Acesso bloqueado. Fale com o suporte.';
@@ -3529,7 +3529,7 @@ window.mudarStatusEmpresa = async function(empresaId, novoStatus) {
 // use a mesma opção que já estava selecionada.
 window.mudarPlanoEmpresa = async function(empresaId, novoPlano) {
   try {
-    const dias = novoPlano==='trial' ? 14 : 30;
+    const dias = novoPlano==='trial' ? 7 : 30;
     const novoVencimento = new Date(Date.now() + dias*24*60*60*1000).toISOString();
     await updateDoc(doc(db,'empresas',empresaId), {plano: novoPlano, status: 'ativo', vencimento: novoVencimento});
     showToast('Plano atualizado — válido até '+new Date(novoVencimento).toLocaleDateString('pt-BR')+'.');
