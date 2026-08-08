@@ -1333,8 +1333,12 @@ async function carregarEmpresa(id) {
 async function verificarSuperAdmin(uid) {
   try {
     const snap = await getDoc(doc(db,'superadmins',uid));
+    window._debugSuperAdmin = 'ok, existe='+snap.exists();
     return snap.exists();
-  } catch(e) { console.error('verificarSuperAdmin falhou:', e.code||e.message||e); return false; }
+  } catch(e) {
+    window._debugSuperAdmin = 'ERRO: '+(e.code||e.message||e);
+    return false;
+  }
 }
 
 function mostrarHeaderUsuario(nome) {
@@ -1485,7 +1489,7 @@ onAuthStateChanged(auth, async (user) => {
   try {
   window._etapaLogin = 'verificarSuperAdmin';
   _isSuperAdmin = await verificarSuperAdmin(user.uid);
-  showToast('DEBUG — Super Admin: '+_isSuperAdmin+' | UID: '+user.uid.slice(0,10));
+  showToast('DEBUG: '+window._debugSuperAdmin, 6000);
   window._etapaLogin = 'carregarPerfilUsuario';
   const perfil = await carregarPerfilUsuario(user.uid);
 
