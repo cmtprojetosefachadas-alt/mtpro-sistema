@@ -1477,7 +1477,11 @@ function mostrarHeaderUsuario(nome) {
   if(!footEl) return;
   footEl.innerHTML = `
     <div class="sidebar-user">${nome}</div>
-    <a onclick="abrirSuporteOperaOs()" style="display:block;text-align:center;font-size:10.5px;color:rgba(255,255,255,0.45);cursor:pointer;margin-bottom:8px;text-decoration:underline">💬 Fale com o Suporte OperaOS</a>
+    <div onclick="abrirSuporteOperaOs()" style="text-align:center;cursor:pointer;margin-bottom:8px;padding:8px 6px;background:rgba(255,255,255,0.06);border-radius:8px">
+      <div style="font-size:11px;color:rgba(255,255,255,0.75);font-weight:600">💬 Suporte OperaOS</div>
+      <div style="font-size:10.5px;color:var(--accent);margin-top:2px;word-break:break-all">operaosgestao@gmail.com</div>
+      <div style="font-size:9.5px;color:rgba(255,255,255,0.4);margin-top:2px">Clique para copiar o e-mail</div>
+    </div>
     <button onclick="fazerLogout()" style="font-size:11px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;border-radius:6px;padding:6px 10px;cursor:pointer;font-family:Inter,sans-serif;font-weight:600;width:100%">Sair</button>
   `;
 }
@@ -1498,7 +1502,7 @@ window.abrirSuporteOperaOs = function() {
   // computadores não têm programa de e-mail padrão configurado, então o
   // mailto sozinho pode não abrir nada visível.
   try { navigator.clipboard.writeText('operaosgestao@gmail.com'); } catch(e){}
-  showToast('E-mail copiado: operaosgestao@gmail.com — abrindo seu app de e-mail...', 5000);
+  showToast('✅ E-mail copiado! Cole no seu Gmail/Outlook (Ctrl+V) e envie sua mensagem.', 6000);
 
   const a = document.createElement('a');
   a.href = mailtoLink;
@@ -1805,7 +1809,7 @@ window.clicarUpgradePro = function() {
   const mailtoLink = 'mailto:operaosgestao@gmail.com?subject='+assunto+'&body='+corpo;
 
   try { navigator.clipboard.writeText('operaosgestao@gmail.com'); } catch(e){}
-  showToast('E-mail copiado: operaosgestao@gmail.com — abrindo seu app de e-mail...', 5000);
+  showToast('✅ E-mail copiado! Cole no seu Gmail/Outlook (Ctrl+V) e envie sua mensagem.', 6000);
 
   const a = document.createElement('a');
   a.href = mailtoLink;
