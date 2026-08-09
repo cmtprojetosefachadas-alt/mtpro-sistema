@@ -415,6 +415,21 @@ body {
 <div class="content-wrap">
 <div class="main">
 
+<!-- Banner de upgrade — só aparece pra quem não é Pro -->
+<div id="banner-upgrade-pro" style="display:none;background:linear-gradient(135deg,#1a2332,#2a3550);border-radius:12px;padding:14px 20px;margin-bottom:18px;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:0 4px 16px rgba(0,0,0,0.12)">
+  <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:240px">
+    <span style="font-size:22px">🚀</span>
+    <div>
+      <div style="color:#fff;font-weight:800;font-size:14px">Migre agora para o Plano Pro</div>
+      <div style="color:#c9d0dd;font-size:12.5px">Controle de estoque completo, relatórios em PDF e mais — por <b style="color:var(--accent)">R$ 69,90/mês</b></div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button onclick="clicarUpgradePro()" style="background:var(--accent);color:#fff;border:none;padding:9px 18px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap">Quero o Pro</button>
+    <button onclick="fecharBannerUpgradePro()" style="background:transparent;color:#8590a6;border:none;font-size:18px;cursor:pointer;padding:4px 8px;line-height:1" title="Fechar">✕</button>
+  </div>
+</div>
+
 <!-- ===== NOVO ORÇAMENTO ===== -->
 <div class="screen active" id="screen-orcamento">
   <div class="orc-grid">
@@ -1735,7 +1750,34 @@ async function init() {
   // isso aqui é só a UI seguindo a mesma regra.
   const navEst = document.getElementById('nav-estoque');
   if(navEst) navEst.style.display = (_empresaAtual?.plano==='pro') ? '' : 'none';
+  atualizarBannerUpgradePro();
 }
+
+// Banner de upgrade — aparece pra Trial e Básico, some pra quem já é Pro.
+// "Fechar" esconde só até o fim do dia (volta a insistir amanhã).
+function atualizarBannerUpgradePro() {
+  const banner = document.getElementById('banner-upgrade-pro');
+  if(!banner || !_empresaAtual) return;
+  const jaEhPro = _empresaAtual.plano === 'pro';
+  const fechadoHoje = localStorage.getItem('operaos_banner_pro_fechado') === new Date().toDateString();
+  banner.style.display = (!jaEhPro && !fechadoHoje) ? 'flex' : 'none';
+}
+
+window.fecharBannerUpgradePro = function() {
+  localStorage.setItem('operaos_banner_pro_fechado', new Date().toDateString());
+  document.getElementById('banner-upgrade-pro').style.display = 'none';
+};
+
+window.clicarUpgradePro = function() {
+  const nomeEmpresa = _empresaAtual?.nome || 'minha empresa';
+  const assunto = encodeURIComponent('Quero migrar para o Plano Pro — '+nomeEmpresa);
+  const corpo = encodeURIComponent(
+    'Olá! Tenho a empresa "'+nomeEmpresa+'" cadastrada no OperaOs e quero migrar para o Plano Pro (R$ 69,90/mês).\n\n'+
+    'E-mail de login: '+(_usuarioLogado?.email||'')+'\n\n'+
+    'Aguardo retorno, obrigado!'
+  );
+  window.location.href = 'mailto:operaosgestao@gmail.com?subject='+assunto+'&body='+corpo;
+};
 
 // ── MATERIAIS ──
 async function carregarMateriais() {
