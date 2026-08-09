@@ -1492,7 +1492,19 @@ window.abrirSuporteOperaOs = function() {
     'E-mail de login: '+(_usuarioLogado?.email||'')+'\n\n'+
     'Descreva aqui o que você precisa:\n'
   );
-  window.location.href = 'mailto:operaosgestao@gmail.com?subject='+assunto+'&body='+corpo;
+  const mailtoLink = 'mailto:operaosgestao@gmail.com?subject='+assunto+'&body='+corpo;
+
+  // Copia o e-mail pra área de transferência de qualquer forma — muitos
+  // computadores não têm programa de e-mail padrão configurado, então o
+  // mailto sozinho pode não abrir nada visível.
+  try { navigator.clipboard.writeText('operaosgestao@gmail.com'); } catch(e){}
+  showToast('E-mail copiado: operaosgestao@gmail.com — abrindo seu app de e-mail...', 5000);
+
+  const a = document.createElement('a');
+  a.href = mailtoLink;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 };
 
 function atualizarLogoImagem(base64) {
@@ -1790,7 +1802,16 @@ window.clicarUpgradePro = function() {
     'E-mail de login: '+(_usuarioLogado?.email||'')+'\n\n'+
     'Aguardo retorno, obrigado!'
   );
-  window.location.href = 'mailto:operaosgestao@gmail.com?subject='+assunto+'&body='+corpo;
+  const mailtoLink = 'mailto:operaosgestao@gmail.com?subject='+assunto+'&body='+corpo;
+
+  try { navigator.clipboard.writeText('operaosgestao@gmail.com'); } catch(e){}
+  showToast('E-mail copiado: operaosgestao@gmail.com — abrindo seu app de e-mail...', 5000);
+
+  const a = document.createElement('a');
+  a.href = mailtoLink;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 };
 
 // ── MATERIAIS ──
