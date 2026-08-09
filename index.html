@@ -1477,9 +1477,23 @@ function mostrarHeaderUsuario(nome) {
   if(!footEl) return;
   footEl.innerHTML = `
     <div class="sidebar-user">${nome}</div>
+    <a onclick="abrirSuporteOperaOs()" style="display:block;text-align:center;font-size:10.5px;color:rgba(255,255,255,0.45);cursor:pointer;margin-bottom:8px;text-decoration:underline">💬 Fale com o Suporte OperaOS</a>
     <button onclick="fazerLogout()" style="font-size:11px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:none;border-radius:6px;padding:6px 10px;cursor:pointer;font-family:Inter,sans-serif;font-weight:600;width:100%">Sair</button>
   `;
 }
+
+// Suporte por e-mail agora — quando tiver WhatsApp, só trocar essa função
+// pra abrir o link do WhatsApp em vez do mailto, sem mexer em mais nada.
+window.abrirSuporteOperaOs = function() {
+  const nomeEmpresa = _empresaAtual?.nome || '';
+  const assunto = encodeURIComponent('Suporte OperaOS'+(nomeEmpresa?' — '+nomeEmpresa:''));
+  const corpo = encodeURIComponent(
+    (nomeEmpresa?'Empresa: '+nomeEmpresa+'\n':'')+
+    'E-mail de login: '+(_usuarioLogado?.email||'')+'\n\n'+
+    'Descreva aqui o que você precisa:\n'
+  );
+  window.location.href = 'mailto:operaosgestao@gmail.com?subject='+assunto+'&body='+corpo;
+};
 
 function atualizarLogoImagem(base64) {
   const img = document.getElementById('empresa-logo-img');
