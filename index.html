@@ -407,6 +407,7 @@ body {
     <button class="side-btn" onclick="showScreen('materiais',this)"><span class="ico">📦</span><span class="label">Materiais</span></button>
     <button class="side-btn" id="nav-usuarios" onclick="showScreen('usuarios',this)"><span class="ico">👤</span><span class="label">Usuários</span></button>
     <button class="side-btn" id="nav-superadmin" style="display:none" onclick="showScreen('superadmin',this)"><span class="ico">🛡️</span><span class="label">Super Admin</span></button>
+    <button class="side-btn" id="nav-estoque" style="display:none" onclick="showScreen('estoque',this)"><span class="ico">📦</span><span class="label">Estoque</span></button>
   </nav>
   <div class="sidebar-footer" id="sidebar-footer"></div>
 </div>
@@ -823,6 +824,125 @@ body {
         </thead>
         <tbody id="superadmin-tbody"></tbody>
       </table>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ESTOQUE (somente plano Pro) ===== -->
+<div class="screen" id="screen-estoque">
+  <div class="orc-header">
+    <h2>Controle de Estoque</h2>
+    <div style="display:flex;gap:8px">
+      <button class="btn-ghost" onclick="gerarPDFEstoque()">📄 Relatório PDF</button>
+      <button class="btn-ghost" onclick="abrirModalNovoProdutoEstoque()">+ Novo produto</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title"><span class="dot"></span>Novo lançamento</div>
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label">Tipo</label>
+        <select class="field" id="est-tipo" onchange="atualizarCampoClienteEstoque()">
+          <option value="entrada">Entrada</option>
+          <option value="saida">Saída</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Produto</label>
+        <select class="field" id="est-produto"><option value="">Selecione...</option></select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Quantidade</label>
+        <input class="field" id="est-quantidade" type="number" min="0" step="0.01" placeholder="0">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field-group" id="est-cliente-group" style="display:none">
+        <label class="field-label">Cliente (destino da saída)</label>
+        <select class="field" id="est-cliente"><option value="">Selecione...</option></select>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Data</label>
+        <input class="field" id="est-data" type="date">
+      </div>
+    </div>
+    <button onclick="registrarLancamentoEstoque()" style="margin-top:10px;padding:10px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer">Registrar lançamento</button>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title"><span class="dot"></span>Produtos em estoque</div>
+    <div class="orc-table-wrap">
+      <table>
+        <thead><tr><th>Produto</th><th>Unidade</th><th>Saldo</th><th>Valor unit.</th><th>Valor em estoque</th><th>Último lançamento</th><th>Última saída</th><th>Ações</th></tr></thead>
+        <tbody id="estoque-produtos-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="dot"></span>Últimos lançamentos</div>
+    <div class="orc-table-wrap">
+      <table>
+        <thead><tr><th>Data</th><th>Tipo</th><th>Produto</th><th>Quantidade</th><th>Cliente</th><th>Saldo após</th></tr></thead>
+        <tbody id="estoque-movimentos-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: novo produto de estoque -->
+<div class="modal-overlay" id="modal-novo-produto-estoque" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal" style="max-width:480px">
+    <h3>Novo produto</h3>
+    <div class="field-group">
+      <label class="field-label">Nome do produto</label>
+      <input class="field" id="ep-nome" placeholder="Ex: Chapa de ACM 3mm">
+    </div>
+    <div class="field-row">
+      <div class="field-group">
+        <label class="field-label">Unidade de medida</label>
+        <select class="field" id="ep-unidade" onchange="document.getElementById('ep-unidade-outra').style.display=this.value==='__outra__'?'block':'none'">
+          <option value="un">un — unidade</option>
+          <option value="m">m — metro</option>
+          <option value="m²">m² — metro quadrado</option>
+          <option value="m³">m³ — metro cúbico</option>
+          <option value="kg">kg — quilo</option>
+          <option value="g">g — grama</option>
+          <option value="L">L — litro</option>
+          <option value="ml">ml — mililitro</option>
+          <option value="cx">cx — caixa</option>
+          <option value="pç">pç — peça</option>
+          <option value="par">par</option>
+          <option value="dz">dz — dúzia</option>
+          <option value="rolo">rolo</option>
+          <option value="saco">saco</option>
+          <option value="fardo">fardo</option>
+          <option value="pallet">pallet</option>
+          <option value="barra">barra</option>
+          <option value="folha">folha</option>
+          <option value="chapa">chapa</option>
+          <option value="bobina">bobina</option>
+          <option value="galão">galão</option>
+          <option value="lata">lata</option>
+          <option value="tubo">tubo</option>
+          <option value="kit">kit</option>
+          <option value="__outra__">Outra (digitar)</option>
+        </select>
+        <input class="field" id="ep-unidade-outra" placeholder="Digite a unidade" style="display:none;margin-top:6px">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Valor unitário (R$)</label>
+        <input class="field" id="ep-valor" type="number" min="0" step="0.01" placeholder="0,00">
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Saldo inicial <span style="color:var(--muted);font-weight:400">(opcional)</span></label>
+      <input class="field" id="ep-saldo-inicial" type="number" min="0" step="0.01" placeholder="0">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn-ghost" style="flex:1" onclick="document.getElementById('modal-novo-produto-estoque').classList.remove('open')">Cancelar</button>
+      <button style="flex:1;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer" onclick="salvarNovoProdutoEstoque()">Salvar produto</button>
     </div>
   </div>
 </div>
@@ -1611,6 +1731,10 @@ async function init() {
   // Super Admin também vê o painel de gestão de empresas, além do próprio sistema
   const navSA = document.getElementById('nav-superadmin');
   if(navSA) navSA.style.display = _isSuperAdmin ? '' : 'none';
+  // Estoque é exclusivo do plano Pro — Firestore Rules também barra no servidor,
+  // isso aqui é só a UI seguindo a mesma regra.
+  const navEst = document.getElementById('nav-estoque');
+  if(navEst) navEst.style.display = (_empresaAtual?.plano==='pro') ? '' : 'none';
 }
 
 // ── MATERIAIS ──
@@ -2383,6 +2507,224 @@ window.gerarOrcamentoParaCliente = function(clienteId) {
   }
   renderCatalogo();
   renderItens();
+};
+
+// ── ESTOQUE (exclusivo plano Pro) ──
+window._estoqueProdutos = [];
+window._estoqueMovimentos = [];
+
+async function carregarEstoqueProdutos() {
+  const snap = await getDocs(colEmpresa('estoque_produtos'));
+  window._estoqueProdutos = snap.docs.map(d=>({id:d.id,...d.data()}));
+}
+
+async function carregarEstoqueMovimentos() {
+  const snap = await getDocs(colEmpresa('estoque_movimentos'));
+  window._estoqueMovimentos = snap.docs.map(d=>({id:d.id,...d.data()}))
+    .sort((a,b)=> new Date(b.data||b.criadoEm) - new Date(a.data||a.criadoEm));
+}
+
+function popularSelectProdutosEstoque() {
+  const sel = document.getElementById('est-produto');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">Selecione...</option>' +
+    window._estoqueProdutos.map(p=>`<option value="${p.id}">${p.nome} (saldo: ${p.saldo||0} ${p.unidade})</option>`).join('');
+}
+
+function popularSelectClientesEstoque() {
+  const sel = document.getElementById('est-cliente');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">Selecione...</option>' +
+    (window._clientes||[]).map(c=>`<option value="${c.nome}">${c.nome}</option>`).join('');
+}
+
+window.atualizarCampoClienteEstoque = function() {
+  const tipo = document.getElementById('est-tipo').value;
+  document.getElementById('est-cliente-group').style.display = tipo==='saida' ? 'block' : 'none';
+};
+
+window.abrirModalNovoProdutoEstoque = function() {
+  document.getElementById('ep-nome').value = '';
+  document.getElementById('ep-unidade').value = 'un';
+  document.getElementById('ep-unidade-outra').value = '';
+  document.getElementById('ep-unidade-outra').style.display = 'none';
+  document.getElementById('ep-valor').value = '';
+  document.getElementById('ep-saldo-inicial').value = '';
+  document.getElementById('modal-novo-produto-estoque').classList.add('open');
+};
+
+window.salvarNovoProdutoEstoque = async function() {
+  const nome = document.getElementById('ep-nome').value.trim();
+  const unidadeSel = document.getElementById('ep-unidade').value;
+  const unidade = unidadeSel==='__outra__' ? document.getElementById('ep-unidade-outra').value.trim() : unidadeSel;
+  const valor = parseFloat(document.getElementById('ep-valor').value)||0;
+  const saldoInicial = parseFloat(document.getElementById('ep-saldo-inicial').value)||0;
+  if(!nome) { showToast('Digite o nome do produto!'); return; }
+  if(!unidade) { showToast('Defina a unidade de medida!'); return; }
+  const agora = new Date().toISOString();
+  await addDoc(collection(db,'estoque_produtos'), {
+    companyId: companyId(), nome, unidade, valorUnitario: valor,
+    saldo: saldoInicial, ultimoLancamento: saldoInicial>0 ? agora : null, ultimaSaida: null, criadoEm: agora
+  });
+  document.getElementById('modal-novo-produto-estoque').classList.remove('open');
+  showToast('Produto "'+nome+'" cadastrado!');
+  await renderEstoque();
+};
+
+window.registrarLancamentoEstoque = async function() {
+  const tipo = document.getElementById('est-tipo').value;
+  const produtoId = document.getElementById('est-produto').value;
+  const quantidade = parseFloat(document.getElementById('est-quantidade').value);
+  const clienteNome = document.getElementById('est-cliente').value;
+  const dataInput = document.getElementById('est-data').value;
+  if(!produtoId) { showToast('Selecione um produto!'); return; }
+  if(!quantidade || quantidade<=0) { showToast('Informe uma quantidade válida!'); return; }
+  if(tipo==='saida' && !clienteNome) { showToast('Selecione o cliente da saída!'); return; }
+
+  const produto = window._estoqueProdutos.find(p=>p.id===produtoId);
+  if(!produto) { showToast('Produto não encontrado.'); return; }
+
+  const saldoAtual = produto.saldo || 0;
+  if(tipo==='saida' && quantidade > saldoAtual) {
+    if(!confirm('Saldo atual é '+saldoAtual+' '+produto.unidade+'. Essa saída vai deixar o saldo negativo. Continuar mesmo assim?')) return;
+  }
+
+  const novoSaldo = tipo==='entrada' ? saldoAtual + quantidade : saldoAtual - quantidade;
+  const dataLancamento = dataInput ? new Date(dataInput+'T12:00:00').toISOString() : new Date().toISOString();
+  const agora = new Date().toISOString();
+
+  await addDoc(collection(db,'estoque_movimentos'), {
+    companyId: companyId(), produtoId, produtoNome: produto.nome, tipo, quantidade,
+    unidade: produto.unidade, clienteNome: tipo==='saida' ? clienteNome : null,
+    data: dataLancamento, saldoApos: novoSaldo, criadoEm: agora
+  });
+
+  const updates = { saldo: novoSaldo, ultimoLancamento: dataLancamento };
+  if(tipo==='saida') updates.ultimaSaida = dataLancamento;
+  await updateDoc(doc(db,'estoque_produtos',produtoId), updates);
+
+  document.getElementById('est-quantidade').value = '';
+  document.getElementById('est-cliente').value = '';
+  showToast((tipo==='entrada'?'Entrada':'Saída')+' registrada! Saldo atual: '+novoSaldo+' '+produto.unidade);
+  await renderEstoque();
+};
+
+async function renderEstoque() {
+  await carregarEstoqueProdutos();
+  await carregarEstoqueMovimentos();
+  if(!window._clientes || !window._clientes.length) await carregarClientes();
+  popularSelectProdutosEstoque();
+  popularSelectClientesEstoque();
+  atualizarCampoClienteEstoque();
+  const hoje = new Date().toISOString().slice(0,10);
+  const dataInput = document.getElementById('est-data');
+  if(dataInput && !dataInput.value) dataInput.value = hoje;
+
+  const fmtR = v => 'R$ '+(Math.round((v||0)*100)/100).toLocaleString('pt-BR',{minimumFractionDigits:2});
+  const fmtD = iso => iso ? new Date(iso).toLocaleDateString('pt-BR') : '—';
+
+  const tbP = document.getElementById('estoque-produtos-tbody');
+  if(tbP) {
+    tbP.innerHTML = window._estoqueProdutos.length ? window._estoqueProdutos.map(p=>{
+      const valorTotal = (p.saldo||0)*(p.valorUnitario||0);
+      return `<tr>
+        <td style="font-weight:600">${p.nome}</td>
+        <td>${p.unidade}</td>
+        <td style="font-weight:700;color:${(p.saldo||0)<0?'var(--red)':'inherit'}">${p.saldo||0}</td>
+        <td>${fmtR(p.valorUnitario)}</td>
+        <td style="font-weight:700;color:var(--accent)">${fmtR(valorTotal)}</td>
+        <td style="font-size:12px;color:var(--muted)">${fmtD(p.ultimoLancamento)}</td>
+        <td style="font-size:12px;color:var(--muted)">${fmtD(p.ultimaSaida)}</td>
+        <td><button class="btn-ghost" style="padding:5px 10px;font-size:10px;color:var(--red);border-color:var(--red)" onclick="removerProdutoEstoque('${p.id}','${p.nome.replace(/'/g,"\\'")}')">Remover</button></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px">Nenhum produto cadastrado ainda.</td></tr>';
+  }
+
+  const tbM = document.getElementById('estoque-movimentos-tbody');
+  if(tbM) {
+    const recentes = window._estoqueMovimentos.slice(0,50);
+    tbM.innerHTML = recentes.length ? recentes.map(m=>`<tr>
+      <td style="font-size:12px">${fmtD(m.data)}</td>
+      <td><span class="badge ${m.tipo==='entrada'?'badge-green':'badge-amber'}">${m.tipo==='entrada'?'Entrada':'Saída'}</span></td>
+      <td>${m.produtoNome}</td>
+      <td>${m.quantidade} ${m.unidade||''}</td>
+      <td style="font-size:12px;color:var(--muted)">${m.clienteNome||'—'}</td>
+      <td style="font-weight:600">${m.saldoApos}</td>
+    </tr>`).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Nenhum lançamento ainda.</td></tr>';
+  }
+}
+
+window.removerProdutoEstoque = async function(id, nome) {
+  if(!confirm('Remover "'+nome+'" do estoque? O histórico de lançamentos dele é mantido, só o produto sai da lista ativa.')) return;
+  await deleteDoc(doc(db,'estoque_produtos',id));
+  showToast('Produto removido.');
+  await renderEstoque();
+};
+
+window.gerarPDFEstoque = function() {
+  if(!window._estoqueProdutos.length) { showToast('Nenhum produto cadastrado ainda!'); return; }
+  const fmtR = v => 'R$ '+(Math.round((v||0)*100)/100).toLocaleString('pt-BR',{minimumFractionDigits:2});
+  const fmtD = iso => iso ? new Date(iso).toLocaleDateString('pt-BR') : '—';
+  const valorTotalEstoque = window._estoqueProdutos.reduce((a,p)=>a+(p.saldo||0)*(p.valorUnitario||0),0);
+  const itensNegativos = window._estoqueProdutos.filter(p=>(p.saldo||0)<0).length;
+
+  const linhas = window._estoqueProdutos.map(p=>{
+    const valorTotal = (p.saldo||0)*(p.valorUnitario||0);
+    return `<tr>
+      <td>${p.nome}</td>
+      <td>${p.unidade}</td>
+      <td class="val ${(p.saldo||0)<0?'red':''}">${p.saldo||0}</td>
+      <td>${fmtR(p.valorUnitario)}</td>
+      <td class="val amber">${fmtR(valorTotal)}</td>
+      <td>${fmtD(p.ultimoLancamento)}</td>
+      <td>${fmtD(p.ultimaSaida)}</td>
+    </tr>`;
+  }).join('');
+
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head>
+  <meta charset="UTF-8">
+  <title>Relatório de estoque — OperaOs</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,sans-serif;color:#1a1a1a;padding:36px;font-size:12px}
+    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:16px;border-bottom:3px solid #e8520a}
+    .logo{font-size:22px;font-weight:900;color:#1a2332}.logo span{color:#e8520a}
+    .titulo{font-size:12px;color:#666;margin-top:4px}
+    .data{font-size:11px;color:#999;text-align:right}
+    .resumo{display:flex;gap:16px;margin-bottom:20px}
+    .resumo div{background:#f8f7f4;border-radius:8px;padding:12px 16px;flex:1}
+    .resumo .label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+    .resumo .val{font-size:16px;font-weight:800}
+    table{width:100%;border-collapse:collapse}
+    th{text-align:left;font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.05em;padding:7px 8px;border-bottom:2px solid #eee}
+    td{padding:8px;border-bottom:1px solid #f0f0f0;font-size:11.5px}
+    .val{font-weight:700}.green{color:#0a8a4a}.amber{color:#e8520a}.red{color:#cc2222}
+    .footer{margin-top:28px;padding-top:12px;border-top:1px solid #eee;font-size:10px;color:#999;text-align:center}
+    @media print{body{padding:18px}}
+  </style>
+  </head><body>
+  <div class="header">
+    <div>
+      <div class="logo">Opera<span>Os</span></div>
+      <div class="titulo">Relatório de estoque — uso interno</div>
+    </div>
+    <div class="data">Gerado em ${new Date().toLocaleDateString('pt-BR')}<br>${window._estoqueProdutos.length} produto(s) listado(s)</div>
+  </div>
+  <div class="resumo">
+    <div><div class="label">Valor total em estoque</div><div class="val amber">${fmtR(valorTotalEstoque)}</div></div>
+    <div><div class="label">Produtos com saldo negativo</div><div class="val ${itensNegativos?'red':'green'}">${itensNegativos}</div></div>
+  </div>
+  <table>
+    <thead><tr><th>Produto</th><th>Unidade</th><th>Saldo</th><th>Valor unit.</th><th>Valor total</th><th>Último lançamento</th><th>Última saída</th></tr></thead>
+    <tbody>${linhas}</tbody>
+  </table>
+  <div class="footer">OperaOs — Documento de uso interno — Gerado automaticamente</div>
+  <script>window.onload=()=>window.print()<\/script>
+  </body></html>`;
+
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
 };
 
 // ── ORÇAMENTOS ──
@@ -3438,6 +3780,7 @@ window.showScreen = function(name,btn) {
   if(name==='usuarios') renderTabelaUsuarios();
   if(name==='clientes') renderTabelaClientes();
   if(name==='superadmin') renderPainelSuperAdmin();
+  if(name==='estoque') renderEstoque();
   if(name==='materiais') { renderFiltrosCategorias(); renderListaCategorias(); popularSelectCategorias('g-nm-cat'); }
 };
 
